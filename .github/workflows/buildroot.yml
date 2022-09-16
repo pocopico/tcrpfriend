@@ -14,7 +14,7 @@ on:
       board:
         description: 'board'
         required: true
-        default: 'syno'
+        default: 'tcrpfriend'
 
 jobs:
   build:
