@@ -287,7 +287,7 @@ getip() {
             break
         fi
         COUNT=$((${COUNT} + 1))
-        IP=$(ip route get 1.1.1.1 2>/dev/null | awk '{print$7}')
+        IP=$(ip route get 1.1.1.1 2>/dev/null | grep dev | awk '{print $7}')
         if [ -n "${IP}" ]; then
             break
         fi
@@ -439,4 +439,3 @@ version)
     ;;
 
 esac
-
