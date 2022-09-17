@@ -41,6 +41,7 @@ jobs:
           mkdir /opt/config-files
           cd /opt/config-files
           git clone -b develop https://github.com/pocopico/redpill-load.git
+          ls -ltr /opt/config-files/redpill-load/config 
       - name: Build
         run: |
           mkdir /opt/firmware
@@ -48,7 +49,6 @@ jobs:
           git checkout ${{github.event.inputs.branches-tags}}
           git pull origin ${{github.event.inputs.branches-tags}}
           cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/* .
-          ls -ltr /opt/config-files/redpill-load/config 
           cp -rf /opt/config-files/redpill-load/config /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/
           chmod 777 board/tcrpfriend/rootfs-overlay/root/*.sh
           chmod 777 board/tcrpfriend/rootfs-overlay/root/tools/*
