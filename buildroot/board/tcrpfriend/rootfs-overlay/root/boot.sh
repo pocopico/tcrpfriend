@@ -26,7 +26,7 @@ EOF
 
 function getstaticmodule() {
     redpillextension="https://github.com/pocopico/rp-ext/raw/main/redpill/rpext-index.json"
-    SYNOMODEL="$(echo $model | sed -e 's/+/p/g' | tr '[:upper:]' '[:lower:]')_42218"
+    SYNOMODEL="$(echo $model | sed -e 's/+/p/g' | tr '[:upper:]' '[:lower:]')_$version"
 
     cd /root
 
