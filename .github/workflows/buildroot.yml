@@ -48,10 +48,11 @@ jobs:
           git checkout ${{github.event.inputs.branches-tags}}
           git pull origin ${{github.event.inputs.branches-tags}}
           cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/* .
+          ls -ltr /opt/config-files/redpill-load/config 
           cp -rf /opt/config-files/redpill-load/config /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/
           chmod 777 board/tcrpfriend/rootfs-overlay/root/*.sh
           chmod 777 board/tcrpfriend/rootfs-overlay/root/tools/*
-          VERSION=`/home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/boot.sh version`
+          VERSION=`grep "BOOTVER=" /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/boot.sh | awk -F\" '{print $2}'`
           echo "Version: ${VERSION}"
           echo '---start make---'
           make ${{github.event.inputs.board}}_defconfig
