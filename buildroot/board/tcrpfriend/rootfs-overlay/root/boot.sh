@@ -26,7 +26,7 @@ EOF
 
 function getstaticmodule() {
     redpillextension="https://github.com/pocopico/rp-ext/raw/main/redpill/rpext-index.json"
-    SYNOMODEL="$(echo $model | sed -e 's/+/p/g' | tr '[:upper:]' '[:lower:]')_$version"
+    SYNOMODEL="$(echo $model | sed -e 's/+/p/g' | tr '[:upper:]' '[:lower:]')_${buildnumber}"
 
     cd /root
 
@@ -92,15 +92,10 @@ function patchkernel() {
 
 }
 
-function patchramdisk() {
+function extractramdisk() {
 
     temprd="/root/rd.temp/"
-    RAMDISK_PATCH=$(cat /root/config/$model/$version/config.json | jq -r -e ' .patches .ramdisk')
-    SYNOINFO_PATCH=$(cat /root/config/$model/$version/config.json | jq -r -e ' .synoinfo')
-    SYNOINFO_USER=$(cat /mnt/tcrp/user_config.json | jq -r -e ' .synoinfo')
-    RAMDISK_COPY=$(cat /root/config/$model/$version/config.json | jq -r -e ' .extra .ramdisk_copy')
-    RD_COMPRESSED=$(cat /root/config/$model/$version/config.json | jq -r -e ' .extra .compress_rd')
-    echo "Patching RamDisk"
+
     echo "Extracting ramdisk to $temprd"
 
     [ ! -d $temprd ] && mkdir $temprd
@@ -119,6 +114,20 @@ function patchramdisk() {
         echo "ERROR, Couldnt read extracted file version"
         exit 99
     fi
+
+}
+
+function patchramdisk() {
+
+    temprd="/root/rd.temp/"
+    RAMDISK_PATCH=$(cat /root/config/$model/$version/config.json | jq -r -e ' .patches .ramdisk')
+    SYNOINFO_PATCH=$(cat /root/config/$model/$version/config.json | jq -r -e ' .synoinfo')
+    SYNOINFO_USER=$(cat /mnt/tcrp/user_config.json | jq -r -e ' .synoinfo')
+    RAMDISK_COPY=$(cat /root/config/$model/$version/config.json | jq -r -e ' .extra .ramdisk_copy')
+    RD_COMPRESSED=$(cat /root/config/$model/$version/config.json | jq -r -e ' .extra .compress_rd')
+    echo "Patching RamDisk"
+
+    extractramdisk
 
     PATCHES="$(echo $RAMDISK_PATCH | jq . | sed -e 's/@@@COMMON@@@/\/root\/config\/_common/' | grep config | sed -e 's/"//g' | sed -e 's/,//g')"
 
@@ -142,8 +151,8 @@ function patchramdisk() {
     while IFS=":" read KEY VALUE; do
         echo "Key : $KEY Value: $VALUE"
         _set_conf_kv $KEY $VALUE $temprd/etc/synoinfo.conf
-        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc/synoinfo.conf'" >>"/root/rp.txt"
-        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc.defaults/synoinfo.conf'" >>"/root/rp.txt"
+        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc/synoinfo.conf" >>"/root/rp.txt"
+        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc.defaults/synoinfo.conf" >>"/root/rp.txt"
     done <<<$(echo $SYNOINFO_PATCH | jq . | grep ":" | sed -e 's/"//g' | sed -e 's/,//g')
 
     echo "Applying user synoinfo settings"
@@ -151,8 +160,8 @@ function patchramdisk() {
     while IFS=":" read KEY VALUE; do
         echo "Key : $KEY Value: $VALUE"
         _set_conf_kv $KEY $VALUE $temprd/etc/synoinfo.conf
-        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc/synoinfo.conf'" >>"/root/rp.txt"
-        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc.defaults/synoinfo.conf'" >>"/root/rp.txt"
+        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc/synoinfo.conf" >>"/root/rp.txt"
+        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc.defaults/synoinfo.conf" >>"/root/rp.txt"
     done <<<$(echo $SYNOINFO_USER | jq . | grep ":" | sed -e 's/"//g' | sed -e 's/,//g')
 
     sed -e "/@@@CONFIG-GENERATED@@@/ {" -e "r /root/rp.txt" -e 'd' -e '}' -i "${temprd}/sbin/init.post"
@@ -298,7 +307,7 @@ getip() {
 
 checkfiles() {
 
-    files="user_config.json init-dsm zImage-dsm"
+    files="user_config.json initrd-dsm zImage-dsm"
 
     for file in $files; do
         if [ -f /mnt/tcrp/$file ]; then
@@ -319,8 +328,10 @@ checkupgrade() {
     rdhash="$(jq -r -e '.general .rdhash' $userconfigfile)"
     zimghash="$(jq -r -e '.general .zimghash' $userconfigfile)"
 
+    echo -n "Detect upgrade : "
+
     if [ "$rdhash" = "$origrdhash" ]; then
-        echo "Ramdisk OK ! "
+        echo -n "Ramdisk OK ! "
     else
         echo "Ramdisk upgrade has been detected "
         patchramdisk
@@ -397,7 +408,7 @@ function boot() {
     export MOD_RDGZ_FILE="/mnt/tcrp/initrd-dsm"
 
     echo "IP Address : ${ipaddress}"
-    echo "Model : $model , Serial : $serial, Mac : $mac1"
+    echo "Model : $model , Serial : $serial, Mac : $mac1 DSM Version : $version "
     echo "Loader BUS: $LOADER_BUS "
     echo "zImage : ${MOD_ZIMAGE_FILE} initrd : ${MOD_RDGZ_FILE}"
     echo "cmdline : ${CMDLINE_LINE}"
@@ -453,13 +464,17 @@ version)
     version $@
     ;;
 
+extractramdisk)
+    initialize
+    extractramdisk
+    ;;
+
 forcejunior)
     initialize
     boot forcejunior
     ;;
 
-\
-    *)
+*)
     initialize
     # All done, lets go for boot/
     boot
