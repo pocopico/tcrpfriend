@@ -375,6 +375,10 @@ function boot() {
         CMDLINE_LINE=$(jq -r -e '.general .usb_line' /mnt/tcrp/user_config.json)
     fi
 
+
+    [ "$1" = "forcejunior"  ] && CMDLINE_LINE+=" force_junior "
+
+
     export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-dsm"
     export MOD_RDGZ_FILE="/mnt/tcrp/initrd-dsm"
 
@@ -431,6 +435,12 @@ patchkernel)
 version)
     version $@
     ;;
+
+forcejunior)
+initialize
+boot forcejunior
+;;
+
 
 *)
     initialize
