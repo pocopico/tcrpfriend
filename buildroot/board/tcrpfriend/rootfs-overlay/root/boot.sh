@@ -323,8 +323,8 @@ setmac() {
 
     # Set custom MAC if defined
 
-    ethdev=$(ip route get 1.1.1.1 | awk '{print $5}')
-    curmac=$(ip link | grep -A 1 eno33555200 | tail -1 | awk '{print $2}' | sed -e 's/://g' | tr '[:lower:]' '[:upper:]')
+    ethdev=$(ip a | grep UP |grep -v LOOP | head -1 | awk '{print $2}'| sed -e 's/://g')
+    curmac=$(ip link | grep -A 1 $ethdev | tail -1 | awk '{print $2}' | sed -e 's/://g' | tr '[:lower:]' '[:upper:]')
 
     if [ -n "${mac1}" ] && [ "${curmac}" != "${mac1}" ]; then
         MAC="${mac1:0:2}:${mac1:2:2}:${mac1:4:2}:${mac1:6:2}:${mac1:8:2}:${mac1:10:2}"
@@ -392,7 +392,7 @@ function boot() {
 
     echo "Boot timeout exceeded, booting ... "
 
-    echo "Loading kexec..."
+    echo "Loading kexec, nothing will be displayed here anymore ..."
 
     kexec --noefi -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
 
