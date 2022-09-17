@@ -1,6 +1,12 @@
 name: buildroot
 
 on:
+  push:
+#    branches:
+#      - main
+    tags:
+      - v*
+      
   workflow_dispatch:
     inputs:
       git-address:
@@ -29,14 +35,24 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libelf-dev
-      - name: Bulid
+          
+      - name: Bring over config files from redpill-load
+        run: |
+          mkdir /opt/config-files
+          cd /opt/config-files
+          git clone git@github.com:pocopico/redpill-load.git    
+      - name: Build
         run: |
           mkdir /opt/firmware
           cd /opt/buildroot
           git checkout ${{github.event.inputs.branches-tags}}
           git pull origin ${{github.event.inputs.branches-tags}}
           cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/* .
+          cp -rf /opt/config-files/redpill-load/config /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/
           chmod 777 board/tcrpfriend/rootfs-overlay/root/*.sh
+          chmod 777 board/tcrpfriend/rootfs-overlay/root/tools/*
+          VERSION=`/home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/boot.sh version`
+          echo "Version: ${VERSION}"
           echo '---start make---'
           make ${{github.event.inputs.board}}_defconfig
           make
@@ -46,3 +62,12 @@ jobs:
         with:
           name: buildroot-${{github.event.inputs.branches-tags}}-${{github.event.inputs.board}}
           path: /opt/firmware
+
+      # Publish a release if is a tag
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            .buildroot/output/images/bzImage
+            .buildroot/output/images/rootfs.cpio.xz
