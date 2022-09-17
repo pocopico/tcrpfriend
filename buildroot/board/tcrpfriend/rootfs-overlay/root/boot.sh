@@ -287,11 +287,27 @@ getip() {
             break
         fi
         COUNT=$((${COUNT} + 1))
-        IP=$(ip route get 1.1.1.1 2>/dev/null | grep dev | awk '{print $7}')
+        IP=$(ip route get 1.1.1.1 2>/dev/null | grep $ethdev | awk '{print $7}')
         if [ -n "${IP}" ]; then
             break
         fi
         sleep 1
+    done
+
+}
+
+checkfiles() {
+
+    files="user_config.json init-dsm zImage-dsm"
+
+    for file in $files; do
+        if [ -f /mnt/tcrp/$file ]; then
+            echo "File : $file OK !"
+        else
+            echo "File : $file missing  !"
+            exit 99
+        fi
+
     done
 
 }
@@ -323,7 +339,7 @@ setmac() {
 
     # Set custom MAC if defined
 
-    ethdev=$(ip a | grep UP |grep -v LOOP | head -1 | awk '{print $2}'| sed -e 's/://g')
+    ethdev=$(ip a | grep UP | grep -v LOOP | head -1 | awk '{print $2}' | sed -e 's/://g')
     curmac=$(ip link | grep -A 1 $ethdev | tail -1 | awk '{print $2}' | sed -e 's/://g' | tr '[:lower:]' '[:upper:]')
 
     if [ -n "${mac1}" ] && [ "${curmac}" != "${mac1}" ]; then
@@ -375,9 +391,7 @@ function boot() {
         CMDLINE_LINE=$(jq -r -e '.general .usb_line' /mnt/tcrp/user_config.json)
     fi
 
-
-    [ "$1" = "forcejunior"  ] && CMDLINE_LINE+=" force_junior "
-
+    [ "$1" = "forcejunior" ] && CMDLINE_LINE+=" force_junior "
 
     export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-dsm"
     export MOD_RDGZ_FILE="/mnt/tcrp/initrd-dsm"
@@ -406,6 +420,9 @@ function initialize() {
 
     # Read Configuration variables
     readconfig
+
+    # Echo Version
+    echo "TCRP Friend Version : $BOOTVER"
 
     # Check ip upgrade is required
     checkupgrade
@@ -437,12 +454,12 @@ version)
     ;;
 
 forcejunior)
-initialize
-boot forcejunior
-;;
+    initialize
+    boot forcejunior
+    ;;
 
-
-*)
+\
+    *)
     initialize
     # All done, lets go for boot/
     boot
