@@ -32,6 +32,7 @@ jobs:
           ls -ltr 
           mkdir /opt/updaterootfs/temprd && cd /opt/updaterootfs/temprd
           xz -dc ../initrd-friend | sudo cpio -idm 2>&1 > /dev/null 
+          echo "BEFORE UPDATE ..."
           ls -ltr
           rm -f ../initrd-friend
           ls -ltr /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root 
@@ -39,17 +40,18 @@ jobs:
           sudo cp -rf /opt/config-files/redpill-load/config /opt/updaterootfs/temprd/root/
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/etc/* /opt/updaterootfs/temprd/etc/
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/usr/* /opt/updaterootfs/temprd/usr/
+          echo "AFTER UPDATE ..."
           sudo ls -ltr /opt/updaterootfs/temprd/root
           sudo ls -ltr /opt/updaterootfs/temprd/etc
           sudo ls -ltr /opt/updaterootfs/temprd/usr
-          sudo df /
+          sudo df -h /
           VERSION="`cat /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/VERSION`"
           echo "Version: ${VERSION}"
           echo "::set-output name=VERSION::${VERSION}"
       - name: Recreate Ramdisk
         run: |
           mkdir /opt/output
-          echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && find . 2>/dev/null | sudo cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
+          echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && sudo find . 2>/dev/null | sudo cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
           cp /opt/updaterootfs/bzImage-friend /opt/output
           ls -ltr /opt/output
       - name: Upload FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
