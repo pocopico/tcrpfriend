@@ -205,6 +205,8 @@ function patchramdisk() {
     updateuserconfigfield "general" "zimghash" "$origzimghash"
     updateuserconfigfield "general" "version" "${major}.${minor}.${micro}-${buildnumber}"
 
+    version="${major}.${minor}.${micro}-${buildnumber}"
+
 }
 
 function updateuserconfig() {
