@@ -26,8 +26,8 @@ jobs:
         run: |
           mkdir /opt/updaterootfs
           cd /opt/updaterootfs
-          #URLS=`curl -s https://api.github.com/repos/pocopico/tcrpfriend/releases/v.0.0.1 | jq -r ".assets[] | select(.name | contains(\"${initrd-friend}\")) | .browser_download_url"`
-          URLS="https://github.com/pocopico/tcrpfriend/releases/download/v0.0.1/initrd-friend https://github.com/pocopico/tcrpfriend/releases/download/v0.0.1/bzImage-friend"
+          #URLS=`curl -s https://api.github.com/repos/pocopico/tcrpfriend/releases/tags/v0.0.0| jq -r ".assets[] | select(.name | contains(\"${initrd-friend}\")) | .browser_download_url"`
+          URLS="https://github.com/pocopico/tcrpfriend/releases/download/v0.0.0/initrd-friend https://github.com/pocopico/tcrpfriend/releases/download/v0.0.0/bzImage-friend"
           for file in $URLS; do curl --insecure --silent --location "$file" -O ; done
           ls -ltr 
           mkdir /opt/updaterootfs/temprd && cd /opt/updaterootfs/temprd
