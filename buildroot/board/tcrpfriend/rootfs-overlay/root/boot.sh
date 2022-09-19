@@ -86,9 +86,9 @@ function patchkernel() {
 
     /root/tools/bzImage-to-vmlinux.sh /mnt/tcrp-p2/zImage /root/vmlinux >log 2>&1 >/dev/null
     /root/tools/kpatch /root/vmlinux /root/vmlinux-mod >log 2>&1 >/dev/null
-    /root/tools/vmlinux-to-bzImage.sh /root/vmlinux-mod /mnt/tcrp/zImage-friend >/dev/null
+    /root/tools/vmlinux-to-bzImage.sh /root/vmlinux-mod /mnt/tcrp/zImage-dsm >/dev/null
 
-    [ -f /mnt/tcrp/zImage-friend ] && echo "Kernel Patched, sha256sum : $(sha256sum /mnt/tcrp/zImage-friend | awk '{print $1}')"
+    [ -f /mnt/tcrp/zImage-dsm ] && echo "Kernel Patched, sha256sum : $(sha256sum /mnt/tcrp/zImage-dsm | awk '{print $1}')"
 
 }
 
@@ -187,15 +187,15 @@ function patchramdisk() {
     # Reassembly ramdisk
     echo "Reassempling ramdisk"
     if [ "${RD_COMPRESSED}" == "true" ]; then
-        (cd "${temprd}" && find . | cpio -o -H newc -R root:root | xz -9 --format=lzma >"/root/initrd-friend") >/dev/null 2>&1 >/dev/null
+        (cd "${temprd}" && find . | cpio -o -H newc -R root:root | xz -9 --format=lzma >"/root/initrd-dsm") >/dev/null 2>&1 >/dev/null
     else
-        (cd "${temprd}" && find . | cpio -o -H newc -R root:root >"/root/initrd-friend") >/dev/null 2>&1
+        (cd "${temprd}" && find . | cpio -o -H newc -R root:root >"/root/initrd-dsm") >/dev/null 2>&1
     fi
-    [ -f /root/initrd-friend ] && echo "Patched ramdisk created $(ls -l /root/initrd-friend)"
+    [ -f /root/initrd-dsm ] && echo "Patched ramdisk created $(ls -l /root/initrd-dsm)"
 
     echo "Copying file to ${LOADER_DISK}3"
 
-    cp -f /root/initrd-friend /mnt/tcrp
+    cp -f /root/initrd-dsm /mnt/tcrp
     cd /root && rm -rf $temprd
 
     origrdhash=$(sha256sum /mnt/tcrp-p2/rd.gz | awk '{print $1}')
@@ -312,7 +312,7 @@ getip() {
 
 checkfiles() {
 
-    files="user_config.json initrd-friend zImage-friend"
+    files="user_config.json initrd-dsm zImage-dsm"
 
     for file in $files; do
         if [ -f /mnt/tcrp/$file ]; then
@@ -415,8 +415,8 @@ function boot() {
 
     [ "$1" = "forcejunior" ] && CMDLINE_LINE+=" force_junior "
 
-    export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-friend"
-    export MOD_RDGZ_FILE="/mnt/tcrp/initrd-friend"
+    export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-dsm"
+    export MOD_RDGZ_FILE="/mnt/tcrp/initrd-dsm"
 
     echo "IP Address : ${ipaddress}"
     echo "Model : $model , Serial : $serial, Mac : $mac1 DSM Version : $version "
