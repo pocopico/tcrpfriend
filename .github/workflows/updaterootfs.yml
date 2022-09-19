@@ -39,9 +39,9 @@ jobs:
           sudo cp -rf /opt/config-files/redpill-load/config /opt/updaterootfs/temprd/root/
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/etc/* /opt/updaterootfs/temprd/etc/
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/usr/* /opt/updaterootfs/temprd/usr/
-          ls -ltr /opt/updaterootfs/temprd/root
-          ls -ltr /opt/updaterootfs/temprd/etc
-          ls -ltr /opt/updaterootfs/temprd/usr
+          sudo ls -ltr /opt/updaterootfs/temprd/root
+          sudo ls -ltr /opt/updaterootfs/temprd/etc
+          sudo ls -ltr /opt/updaterootfs/temprd/usr
           VERSION="`cat /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/VERSION`"
           echo "Version: ${VERSION}"
           echo "::set-output name=VERSION::${VERSION}"
