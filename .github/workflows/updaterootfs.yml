@@ -40,7 +40,7 @@ jobs:
           URLS=`curl -s https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r ".assets[] | select(.name | contains(\"${initrd-friend}\")) | .browser_download_url"`
           for file in $URLS; do curl --location --progress-bar "$file" -O ; done
           mkdir temprd && cd temprd
-          xz -dc ../initrd-friend | cpio -idm 
+          xz -dc ../initrd-friend | sudo cpio -idm 2>&1 > /dev/null 
           cp -rp /opt/config-file/redpill-load/config root/
       - name: Recreate Ramdisk
         run: |
