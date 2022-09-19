@@ -30,7 +30,7 @@ jobs:
           URLS="https://github.com/pocopico/tcrpfriend/releases/download/v0.0.1/initrd-friend https://github.com/pocopico/tcrpfriend/releases/download/v0.0.1/bzImage-friend"
           for file in $URLS; do curl --insecure --silent --location "$file" -O ; done
           ls -ltr 
-          mkdir temprd && cd temprd
+          mkdir /opt/updaterootfs/temprd && cd /opt/updaterootfs/temprd
           xz -dc ../initrd-friend | sudo cpio -idm 2>&1 > /dev/null 
           ls -ltr /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root 
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root .
@@ -43,6 +43,7 @@ jobs:
           mkdir /opt/output
           echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && find . 2>/dev/null | sudo cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
           cp /opt/updaterootfs/bzImage-friend /opt/output
+          ls -ltr /opt/output
       - name: Upload FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
         uses: actions/upload-artifact@v3
         with:
