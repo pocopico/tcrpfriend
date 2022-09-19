@@ -39,7 +39,7 @@ jobs:
           mkdir /opt/output
           echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && find . 2>/dev/null | sudo cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
           cp /opt/updaterootfs/bzImage-friend /opt/output
-      - name: Upload buildroot-${{github.event.inputs.branches-tags}}-${{github.event.inputs.board}}
+      - name: Upload FriendFiles-$VERSION
         uses: actions/upload-artifact@v3
         with:
           name: FriendFiles-$VERSION
