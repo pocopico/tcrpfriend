@@ -28,13 +28,14 @@ jobs:
           cd /opt/updaterootfs
           #URLS=`curl -s https://api.github.com/repos/pocopico/tcrpfriend/releases/v.0.0.1 | jq -r ".assets[] | select(.name | contains(\"${initrd-friend}\")) | .browser_download_url"`
           URLS="https://github.com/pocopico/tcrpfriend/releases/download/v0.0.1/initrd-friend https://github.com/pocopico/tcrpfriend/releases/download/v0.0.1/bzImage-friend"
-          for file in $URLS; do curl --silent --location "$file" -O ; done
+          for file in $URLS; do curl --insecure --silent --location "$file" -O ; done
           ls -ltr 
           mkdir temprd && cd temprd
           xz -dc ../initrd-friend | sudo cpio -idm 2>&1 > /dev/null 
-          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/* root/
+          ls -ltr /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root 
+          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root .
           sudo cp -rf /opt/config-files/redpill-load/config root/
-          VERSION=`cat /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/VERSION`
+          VERSION="`cat /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/VERSION`"
           echo "Version: ${VERSION}"
           echo "::set-output name=VERSION::${VERSION}"
       - name: Recreate Ramdisk
