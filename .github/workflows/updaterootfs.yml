@@ -42,8 +42,8 @@ jobs:
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/etc/* /opt/updaterootfs/temprd/etc/
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/usr/* /opt/updaterootfs/temprd/usr/
           sudo chmod +x /opt/updaterootfs/temprd/usr/bin/jq
-          for script in $(find /opt/updaterootfs/temprd/root/ -name "*.sh" ); do chmod +x $script; done
-          for patch in $(find /opt/updaterootfs/temprd/root/tools ); do chmod +x $patch; done
+          for script in $(find /opt/updaterootfs/temprd/root/ -name "*.sh" ); do echo "Setting +x on s$script" ; chmod +x $script; done
+          for patch in $(find /opt/updaterootfs/temprd/root/tools ); do echo "Setting +x on s$patch" ; chmod +x $patch; done
           echo "AFTER UPDATE ..."
           sudo ls -ltr /opt/updaterootfs/temprd/root
           sudo ls -ltr /opt/updaterootfs/temprd/etc
