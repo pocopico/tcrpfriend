@@ -27,7 +27,8 @@ jobs:
           mkdir /opt/updaterootfs
           cd /opt/updaterootfs
           #URLS=`curl -s https://api.github.com/repos/pocopico/tcrpfriend/releases/tags/v0.0.0| jq -r ".assets[] | select(.name | contains(\"${initrd-friend}\")) | .browser_download_url"`
-          URLS="https://github.com/pocopico/tcrpfriend/releases/download/v0.0.0/initrd-friend https://github.com/pocopico/tcrpfriend/releases/download/v0.0.0/bzImage-friend"
+          #URLS="https://github.com/pocopico/tcrpfriend/releases/download/v0.0.0/initrd-friend https://github.com/pocopico/tcrpfriend/releases/download/v0.0.0/bzImage-friend"
+          URLS="`curl -s https://api.github.com/repos/pocopico/tcrpfriend/releases/tags/v0.0.0 | jq -r -e .assets[].browser_download_url`"
           for file in $URLS; do curl --insecure --silent --location "$file" -O ; done
           ls -ltr 
           mkdir /opt/updaterootfs/temprd && cd /opt/updaterootfs/temprd
@@ -41,7 +42,8 @@ jobs:
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/etc/* /opt/updaterootfs/temprd/etc/
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/usr/* /opt/updaterootfs/temprd/usr/
           sudo chmod +x /opt/updaterootfs/temprd/usr/bin/jq
-          for script in $(find /opt/updaterootfs/temprd/root/tools ); do chmod +x $script; done
+          for script in $(find /opt/updaterootfs/temprd/root/ -name "*.sh" ); do chmod +x $script; done
+          for patch in $(find /opt/updaterootfs/temprd/root/tools ); do chmod +x $patch; done
           echo "AFTER UPDATE ..."
           sudo ls -ltr /opt/updaterootfs/temprd/root
           sudo ls -ltr /opt/updaterootfs/temprd/etc
