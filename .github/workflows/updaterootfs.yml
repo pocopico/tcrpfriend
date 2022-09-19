@@ -26,11 +26,12 @@ jobs:
           mkdir /opt/updaterootfs
           cd /opt/updaterootfs
           URLS=`curl -s https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r ".assets[] | select(.name | contains(\"${initrd-friend}\")) | .browser_download_url"`
-          for file in $URLS; do curl --location --progress-bar "$file" -O ; done
+          for file in $URLS; do curl --silent --location "$file" -O ; done
+          ls -ltr 
           mkdir temprd && cd temprd
           xz -dc ../initrd-friend | sudo cpio -idm 2>&1 > /dev/null 
-          cp -rf /opt/config-files/redpill-load/config root/
-          cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root root
+          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/* root/
+          sudo cp -rf /opt/config-files/redpill-load/config root/
           VERSION=`grep "BOOTVER=" /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/boot.sh | awk -F\" '{print $2}'`
           echo "Version: ${VERSION}"
       - name: Recreate Ramdisk
