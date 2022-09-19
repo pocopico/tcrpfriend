@@ -405,7 +405,10 @@ mountall() {
 
 function boot() {
 
-    [ "cat /proc/cmdline | grep debugfriend | wc -l" = "1" ] && echo "Debug Friend set, stopping boot process" && exit 0
+    if grep -q "debugfriend" /proc/cmdline; then
+        echo "Debug Friend set, stopping boot process"
+        exit 0
+    fi
 
     if [ "$LOADER_BUS" = "ata" ]; then
         CMDLINE_LINE=$(jq -r -e '.general .sata_line' /mnt/tcrp/user_config.json)
