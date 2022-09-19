@@ -34,6 +34,7 @@ jobs:
           sudo cp -rf /opt/config-files/redpill-load/config root/
           VERSION=`grep "BOOTVER=" /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/boot.sh | awk -F\" '{print $2}'`
           echo "Version: ${VERSION}"
+          echo "::set-output name=VERSION::${VERSION}"
       - name: Recreate Ramdisk
         run: |
           mkdir /opt/output
