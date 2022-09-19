@@ -86,9 +86,9 @@ function patchkernel() {
 
     /root/tools/bzImage-to-vmlinux.sh /mnt/tcrp-p2/zImage /root/vmlinux >log 2>&1 >/dev/null
     /root/tools/kpatch /root/vmlinux /root/vmlinux-mod >log 2>&1 >/dev/null
-    /root/tools/vmlinux-to-bzImage.sh /root/vmlinux-mod /mnt/tcrp/zImage-dsm >/dev/null
+    /root/tools/vmlinux-to-bzImage.sh /root/vmlinux-mod /mnt/tcrp/zImage-friend >/dev/null
 
-    [ -f /mnt/tcrp/zImage-dsm ] && echo "Kernel Patched, sha256sum : $(sha256sum /mnt/tcrp/zImage-dsm | awk '{print $1}')"
+    [ -f /mnt/tcrp/zImage-friend ] && echo "Kernel Patched, sha256sum : $(sha256sum /mnt/tcrp/zImage-friend | awk '{print $1}')"
 
 }
 
@@ -187,15 +187,15 @@ function patchramdisk() {
     # Reassembly ramdisk
     echo "Reassempling ramdisk"
     if [ "${RD_COMPRESSED}" == "true" ]; then
-        (cd "${temprd}" && find . | cpio -o -H newc -R root:root | xz -9 --format=lzma >"/root/initrd-dsm") >/dev/null 2>&1 >/dev/null
+        (cd "${temprd}" && find . | cpio -o -H newc -R root:root | xz -9 --format=lzma >"/root/initrd-friend") >/dev/null 2>&1 >/dev/null
     else
-        (cd "${temprd}" && find . | cpio -o -H newc -R root:root >"/root/initrd-dsm") >/dev/null 2>&1
+        (cd "${temprd}" && find . | cpio -o -H newc -R root:root >"/root/initrd-friend") >/dev/null 2>&1
     fi
-    [ -f /root/initrd-dsm ] && echo "Patched ramdisk created $(ls -l /root/initrd-dsm)"
+    [ -f /root/initrd-friend ] && echo "Patched ramdisk created $(ls -l /root/initrd-friend)"
 
     echo "Copying file to ${LOADER_DISK}3"
 
-    cp -f /root/initrd-dsm /mnt/tcrp
+    cp -f /root/initrd-friend /mnt/tcrp
     cd /root && rm -rf $temprd
 
     origrdhash=$(sha256sum /mnt/tcrp-p2/rd.gz | awk '{print $1}')
@@ -312,7 +312,7 @@ getip() {
 
 checkfiles() {
 
-    files="user_config.json initrd-dsm zImage-dsm"
+    files="user_config.json initrd-friend zImage-friend"
 
     for file in $files; do
         if [ -f /mnt/tcrp/$file ]; then
@@ -397,13 +397,15 @@ mountall() {
     [ ! -d /mnt/tcrp-p1 ] && mkdir /mnt/tcrp-p1
     [ ! -d /mnt/tcrp-p2 ] && mkdir /mnt/tcrp-p2
 
-    [ "$(df | grep ${LOADER_DISK}1 | wc -l)" = "0" ] && mount /dev/${LOADER_DISK}1 /mnt/tcrp-p1
-    [ "$(df | grep ${LOADER_DISK}2 | wc -l)" = "0" ] && mount /dev/${LOADER_DISK}2 /mnt/tcrp-p2
-    [ "$(df | grep ${LOADER_DISK}3 | wc -l)" = "0" ] && mount /dev/${LOADER_DISK}3 /mnt/tcrp
+    [ "$(mount | grep ${LOADER_DISK}1 | wc -l)" = "0" ] && mount /dev/${LOADER_DISK}1 /mnt/tcrp-p1
+    [ "$(mount | grep ${LOADER_DISK}2 | wc -l)" = "0" ] && mount /dev/${LOADER_DISK}2 /mnt/tcrp-p2
+    [ "$(mount | grep ${LOADER_DISK}3 | wc -l)" = "0" ] && mount /dev/${LOADER_DISK}3 /mnt/tcrp
 
 }
 
 function boot() {
+
+    [ "cat /proc/cmdline | grep debugfriend | wc -l" = "1" ] && echo "Debug Friend set, stopping boot process" && exit 0
 
     if [ "$LOADER_BUS" = "ata" ]; then
         CMDLINE_LINE=$(jq -r -e '.general .sata_line' /mnt/tcrp/user_config.json)
@@ -413,8 +415,8 @@ function boot() {
 
     [ "$1" = "forcejunior" ] && CMDLINE_LINE+=" force_junior "
 
-    export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-dsm"
-    export MOD_RDGZ_FILE="/mnt/tcrp/initrd-dsm"
+    export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-friend"
+    export MOD_RDGZ_FILE="/mnt/tcrp/initrd-friend"
 
     echo "IP Address : ${ipaddress}"
     echo "Model : $model , Serial : $serial, Mac : $mac1 DSM Version : $version "
