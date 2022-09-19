@@ -182,6 +182,7 @@ function patchramdisk() {
     cat /mnt/tcrp-p1/custom.gz | cpio -idm
 
     for script in $(find /root/rd.temp/exts/ | grep ".sh"); do chmod +x $script; done
+    chmod +x $temprd/usr/bin/modprobe
 
     # Reassembly ramdisk
     echo "Reassempling ramdisk"
