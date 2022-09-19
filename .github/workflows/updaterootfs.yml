@@ -22,6 +22,7 @@ jobs:
           git clone -b develop https://github.com/pocopico/redpill-load.git
           ls -ltr /opt/config-files/redpill-load/config 
       - name: Clone source code
+        id: updaterootfs
         run: |
           mkdir /opt/updaterootfs
           cd /opt/updaterootfs
@@ -40,10 +41,10 @@ jobs:
           mkdir /opt/output
           echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && find . 2>/dev/null | sudo cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
           cp /opt/updaterootfs/bzImage-friend /opt/output
-      - name: Upload FriendFiles-${{ steps.build.outputs.VERSION }}
+      - name: Upload FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
         uses: actions/upload-artifact@v3
         with:
-          name: FriendFiles-${{ steps.build.outputs.VERSION }}
+          name: FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
           path: /opt/output        
  # Publish a release if is a tag
       - name: Release
