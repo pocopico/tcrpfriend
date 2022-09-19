@@ -63,12 +63,3 @@ jobs:
         with:
           name: buildroot-${{github.event.inputs.branches-tags}}-${{github.event.inputs.board}}
           path: /opt/firmware
-
-      # Publish a release if is a tag
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: |
-            .buildroot/output/images/bzImage
-            .buildroot/output/images/rootfs.cpio.xz
