@@ -366,17 +366,21 @@ setmac() {
 
 readconfig() {
 
-    userconfigfile=/mnt/tcrp/user_config.json
-
-    model="$(jq -r -e '.general .model' $userconfigfile)"
-    version="$(jq -r -e '.general .version' $userconfigfile)"
-    serial="$(jq -r -e '.extra_cmdline .sn' $userconfigfile)"
-    rdhash="$(jq -r -e '.general .rdhash' $userconfigfile)"
-    zimghash="$(jq -r -e '.general .zimghash' $userconfigfile)"
-    mac1="$(jq -r -e '.extra_cmdline .mac1' $userconfigfile)"
-
     LOADER_DISK=$(fdisk -l | grep -v raid | grep -v W95 | grep Linux | grep 48M | cut -c 1-8 | awk -F\/ '{print $3}')
     LOADER_BUS="$(udevadm info --query property --name /dev/${LOADER_DISK} | grep -i ID_BUS | awk -F= '{print $2}')"
+
+    userconfigfile=/mnt/tcrp/user_config.json
+
+    if [ -f $userconfigfile ]; then
+        model="$(jq -r -e '.general .model' $userconfigfile)"
+        version="$(jq -r -e '.general .version' $userconfigfile)"
+        serial="$(jq -r -e '.extra_cmdline .sn' $userconfigfile)"
+        rdhash="$(jq -r -e '.general .rdhash' $userconfigfile)"
+        zimghash="$(jq -r -e '.general .zimghash' $userconfigfile)"
+        mac1="$(jq -r -e '.extra_cmdline .mac1' $userconfigfile)"
+    else
+        echo "ERROR ! User config file : $userconfigfile not found"
+    fi
 
 }
 
