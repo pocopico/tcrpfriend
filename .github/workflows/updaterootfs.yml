@@ -44,8 +44,8 @@ jobs:
           cp -rp /opt/config-file/redpill-load/config root/
       - name: Recreate Ramdisk
         run: |
-        mkdir /opt/output
-        echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && find . 2>/dev/null | cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
+          mkdir /opt/output
+          echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && find . 2>/dev/null | cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
       - name: Upload buildroot-${{github.event.inputs.branches-tags}}-${{github.event.inputs.board}}
         uses: actions/upload-artifact@v3
         with:
