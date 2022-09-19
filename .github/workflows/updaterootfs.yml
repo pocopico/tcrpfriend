@@ -32,6 +32,7 @@ jobs:
           ls -ltr 
           mkdir /opt/updaterootfs/temprd && cd /opt/updaterootfs/temprd
           xz -dc ../initrd-friend | sudo cpio -idm 2>&1 > /dev/null 
+          rm -f ../initrd-friend
           ls -ltr /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root 
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root .
           sudo cp -rf /opt/config-files/redpill-load/config root/
