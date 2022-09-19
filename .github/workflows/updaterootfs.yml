@@ -32,17 +32,16 @@ jobs:
           ls -ltr 
           mkdir /opt/updaterootfs/temprd && cd /opt/updaterootfs/temprd
           xz -dc ../initrd-friend | sudo cpio -idm 2>&1 > /dev/null 
+          ls -ltr
           rm -f ../initrd-friend
           ls -ltr /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root 
-          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/* ./root/*
-          sudo cp -rf /opt/config-files/redpill-load/config root/
-          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/etc/* ./etc/
-          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/usr/* ./usr/
-          ls -ltr ./root
-          ls -ltr ./etc
-          ls -ltr ./usr
-          ls -ltr .
-          
+          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/* /opt/updaterootfs/temprd/root/
+          sudo cp -rf /opt/config-files/redpill-load/config /opt/updaterootfs/temprd/root/
+          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/etc/* /opt/updaterootfs/temprd/etc/
+          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/usr/* /opt/updaterootfs/temprd/usr/
+          ls -ltr /opt/updaterootfs/temprd/root
+          ls -ltr /opt/updaterootfs/temprd/etc
+          ls -ltr /opt/updaterootfs/temprd/usr
           VERSION="`cat /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/VERSION`"
           echo "Version: ${VERSION}"
           echo "::set-output name=VERSION::${VERSION}"
