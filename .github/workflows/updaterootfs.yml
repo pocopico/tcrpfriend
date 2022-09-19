@@ -39,10 +39,10 @@ jobs:
           mkdir /opt/output
           echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && find . 2>/dev/null | sudo cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
           cp /opt/updaterootfs/bzImage-friend /opt/output
-      - name: Upload FriendFiles-${{ env.REPO }}
+      - name: Upload FriendFiles-${{ steps.build.outputs.VERSION }}
         uses: actions/upload-artifact@v3
         with:
-          name: FriendFiles-${{ env.REPO }}
+          name: FriendFiles-${{ steps.build.outputs.VERSION }}
           path: /opt/output        
  # Publish a release if is a tag
       - name: Release
