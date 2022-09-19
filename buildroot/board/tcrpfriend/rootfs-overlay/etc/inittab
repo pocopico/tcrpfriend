@@ -33,11 +33,8 @@ null::sysinit:/bin/ln -sf /proc/self/fd/2 /dev/stderr
 ttyS0::askfirst:/sbin/agetty -a root ttyS0 115200 linux
 ::respawn:/usr/bin/ttyd login -f root
 
-# Put a getty on the serial port
-console::respawn:/sbin/getty -L console 0 vt100 # GENERIC_SERIAL
-
 # Stuff to do for the 3-finger salute
-#::ctrlaltdel:/sbin/reboot
+::ctrlaltdel:/sbin/reboot
 
 # Stuff to do before rebooting
 ::shutdown:/etc/init.d/rcK
