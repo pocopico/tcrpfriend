@@ -44,7 +44,7 @@ jobs:
       - name: Upload FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
         uses: actions/upload-artifact@v3
         with:
-          name: FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
+          name: FriendFiles-v${{ steps.updaterootfs.outputs.VERSION }}
           path: /opt/output        
  # Publish a release if is a tag
       - name: Release
