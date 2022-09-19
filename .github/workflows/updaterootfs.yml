@@ -1,0 +1,63 @@
+name: updaterootfs
+
+on:
+  push:
+#    branches:
+#      - main
+    tags:
+      - v*
+      
+  workflow_dispatch:
+    inputs:
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Bring over config files from redpill-load
+        run: |
+          mkdir /opt/config-files
+          cd /opt/config-files
+          git clone -b develop https://github.com/pocopico/redpill-load.git
+          ls -ltr /opt/config-files/redpill-load/config 
+      - name: Clone source code
+        id: updaterootfs
+        run: |
+          mkdir /opt/updaterootfs
+          cd /opt/updaterootfs
+          #URLS=`curl -s https://api.github.com/repos/pocopico/tcrpfriend/releases/v.0.0.1 | jq -r ".assets[] | select(.name | contains(\"${initrd-friend}\")) | .browser_download_url"`
+          URLS="https://github.com/pocopico/tcrpfriend/releases/download/v0.0.1/initrd-friend https://github.com/pocopico/tcrpfriend/releases/download/v0.0.1/bzImage-friend"
+          for file in $URLS; do curl --insecure --silent --location "$file" -O ; done
+          ls -ltr 
+          mkdir /opt/updaterootfs/temprd && cd /opt/updaterootfs/temprd
+          xz -dc ../initrd-friend | sudo cpio -idm 2>&1 > /dev/null 
+          ls -ltr /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root 
+          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root .
+          sudo cp -rf /opt/config-files/redpill-load/config root/
+          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/etc .
+          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/usr .
+          VERSION="`cat /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/VERSION`"
+          echo "Version: ${VERSION}"
+          echo "::set-output name=VERSION::${VERSION}"
+      - name: Recreate Ramdisk
+        run: |
+          mkdir /opt/output
+          echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && find . 2>/dev/null | sudo cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
+          cp /opt/updaterootfs/bzImage-friend /opt/output
+          ls -ltr /opt/output
+      - name: Upload FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
+          path: /opt/output        
+ # Publish a release if is a tag
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            /opt/output/bzImage-friend
+            /opt/output/initrd-friend
+          
+      
