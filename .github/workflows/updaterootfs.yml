@@ -31,5 +31,7 @@ jobs:
         run: |
           git clone ${{github.event.inputs.git-address}} /opt/buildroot
           cd /opt/buildroot
-          ls
+          ls 
+          ls .buildroot/output/images/bzImage
+          ls .buildroot/output/images/rootfs.cpio.xz
       
