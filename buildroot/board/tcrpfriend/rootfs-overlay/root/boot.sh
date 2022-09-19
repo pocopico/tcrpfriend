@@ -7,6 +7,7 @@
 ###############################################################################
 
 BOOTVER="0.0.1"
+FRIENDLOG="/mnt/tcrp/friendlog.log"
 
 ###############################################################################
 
@@ -296,8 +297,8 @@ getip() {
     # Wait for an IP
     COUNT=0
     while true; do
-        if [ ${COUNT} -eq 20 ]; then
-            echo "ERROR"
+        if [ ${COUNT} -eq 5 ]; then
+            echo "ERROR Could get IP"
             break
         fi
         COUNT=$((${COUNT} + 1))
@@ -339,14 +340,14 @@ checkupgrade() {
         echo -n "Ramdisk OK ! "
     else
         echo "Ramdisk upgrade has been detected "
-        patchramdisk
+        patchramdisk 2>&1 >>$FRIENDLOG
     fi
 
     if [ "$zimghash" = "$origzimghash" ]; then
         echo "zImage OK ! "
     else
         echo "zImage upgrade has been detected "
-        patchkernel
+        patchkernel 2>&1 >>$FRIENDLOG
     fi
 
 }
