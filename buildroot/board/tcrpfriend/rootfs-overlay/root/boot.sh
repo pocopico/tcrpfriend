@@ -289,6 +289,8 @@ function getusb() {
 
 getip() {
 
+    ethdev=$(ip a | grep UP | grep -v LOOP | head -1 | awk '{print $2}' | sed -e 's/://g')
+
     # Wait for an IP
     COUNT=0
     while true; do
@@ -297,8 +299,8 @@ getip() {
             break
         fi
         COUNT=$((${COUNT} + 1))
-        IP=$(ip route get 1.1.1.1 2>/dev/null | grep $ethdev | awk '{print $7}')
-        if [ -n "${IP}" ]; then
+        IP="$(ip route get 1.1.1.1 2>/dev/null | grep $ethdev | awk '{print $7}')"
+        if [ -n "$IP" ]; then
             break
         fi
         sleep 1
