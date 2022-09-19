@@ -27,11 +27,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Bring over config files from redpill-load
+        run: |
+          mkdir /opt/config-files
+          cd /opt/config-files
+          git clone -b develop https://github.com/pocopico/redpill-load.git
+          ls -ltr /opt/config-files/redpill-load/config 
       - name: Clone source code
         run: |
-          git clone ${{github.event.inputs.git-address}} /opt/buildroot
-          cd /opt/buildroot
-          ls 
-          ls .buildroot/output/images/bzImage
-          ls .buildroot/output/images/rootfs.cpio.xz
+          mkdir /opt/updaterootfs
+          cd /opt/updaterootfs
+          URLS=`curl -s https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r ".assets[] | select(.name | contains(\"${initrd-friend}\")) | .browser_download_url"`
+          for file in $URLS; do curl --location --progress-bar "$file" -O ; done
+          mkdir temprd && cd temprd
+          xz -dc ../initrd-friend | cpio -idm 
+          cp -rp /opt/config-file/redpill-load/config root/
+      - name: Recreate Ramdisk
+        run: |
+        mkdir /opt/output
+        echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && find . 2>/dev/null | cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
+      - name: Upload buildroot-${{github.event.inputs.branches-tags}}-${{github.event.inputs.board}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: buildroot-${{github.event.inputs.branches-tags}}-${{github.event.inputs.board}}
+          path: /opt/output/initrd-friend
+          path: /opt/updaterootfs/bzImage-friend
+
+          
       
