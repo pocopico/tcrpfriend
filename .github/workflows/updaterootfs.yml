@@ -1,4 +1,4 @@
-name: buildroot
+name: updaterootfs
 
 on:
   push:
