@@ -119,7 +119,7 @@ function extractramdisk() {
 
 function patchramdisk() {
 
-    temprd="/root/rd.temp/"
+    temprd="/root/rd.temp"
     RAMDISK_PATCH=$(cat /root/config/$model/$version/config.json | jq -r -e ' .patches .ramdisk')
     SYNOINFO_PATCH=$(cat /root/config/$model/$version/config.json | jq -r -e ' .synoinfo')
     SYNOINFO_USER=$(cat /mnt/tcrp/user_config.json | jq -r -e ' .synoinfo')
@@ -431,6 +431,9 @@ function boot() {
 }
 
 function initialize() {
+    # Checkif running in TC
+    [ "$(hostname)" != "tcrpfriend" ] && echo "ERROR running on alien system" && exit 99
+
     # Mount loader disk
     mountall
 
