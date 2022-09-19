@@ -1,0 +1,35 @@
+name: buildroot
+
+on:
+  push:
+#    branches:
+#      - main
+    tags:
+      - v*
+      
+  workflow_dispatch:
+    inputs:
+      git-address:
+        description: 'git-address'
+        required: true
+        default: 'https://github.com/buildroot/buildroot.git'
+      branches-tags:
+        description: 'branches-tags'
+        required: true
+        default: '2022.02'
+      board:
+        description: 'board'
+        required: true
+        default: 'tcrpfriend'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Clone source code
+        run: |
+          git clone ${{github.event.inputs.git-address}} /opt/buildroot
+          cd /opt/buildroot
+          ls
+      
