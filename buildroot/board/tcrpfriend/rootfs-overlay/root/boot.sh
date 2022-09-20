@@ -110,15 +110,19 @@ function extractramdisk() {
 
     if [ -f $temprd/etc/VERSION ]; then
         . $temprd/etc/VERSION
-        echo "Extracted ramdisk VERSION : ${major}.${minor}.${micro}_${buildnumber}"
+        echo "Extracted ramdisk VERSION : ${major}.${minor}.${micro}-${buildnumber}"
     else
         echo "ERROR, Couldnt read extracted file version"
         exit 99
     fi
 
+    version="${major}.${minor}.${micro}-${buildnumber}"
+
 }
 
 function patchramdisk() {
+
+    extractramdisk
 
     temprd="/root/rd.temp"
     RAMDISK_PATCH=$(cat /root/config/$model/$version/config.json | jq -r -e ' .patches .ramdisk')
@@ -127,8 +131,6 @@ function patchramdisk() {
     RAMDISK_COPY=$(cat /root/config/$model/$version/config.json | jq -r -e ' .extra .ramdisk_copy')
     RD_COMPRESSED=$(cat /root/config/$model/$version/config.json | jq -r -e ' .extra .compress_rd')
     echo "Patching RamDisk"
-
-    extractramdisk
 
     PATCHES="$(echo $RAMDISK_PATCH | jq . | sed -e 's/@@@COMMON@@@/\/root\/config\/_common/' | grep config | sed -e 's/"//g' | sed -e 's/,//g')"
 
@@ -243,9 +245,8 @@ function countdown() {
     let timeout=5
     while [ $timeout -ge 0 ]; do
         sleep 1
-        let timeout=$timeout-1
-
         printf '\e[32m%s\e[0m\r' "Press <ctrl-c> to stop booting in : $timeout"
+        let timeout=$timeout-1
     done
 
 }
