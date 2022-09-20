@@ -52,6 +52,9 @@ jobs:
           VERSION="`cat /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/VERSION`"
           echo "Version: ${VERSION}"
           echo "::set-output name=VERSION::${VERSION}"
+          touch /opt/output/chksum
+          sha256sum zImage-friend >> /opt/output/chksum
+          sha256sum initrd-friend >> /opt/output/chksum
       - name: Recreate Ramdisk
         run: |
           mkdir /opt/output
@@ -71,5 +74,6 @@ jobs:
           files: |
             /opt/output/bzImage-friend
             /opt/output/initrd-friend
+            /opt/output/chksum
           
       
