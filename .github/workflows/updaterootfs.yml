@@ -60,7 +60,7 @@ jobs:
           cp /opt/updaterootfs/bzImage-friend /opt/output
           ls -ltr /opt/output
           touch /opt/output/chksum
-          echo "VERSION=$VERSION" >> /opt/output/chksum
+          echo "VERSION=`cat /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/VERSION`" >> /opt/output/chksum
           sha256sum /opt/output/bzImage-friend >> /opt/output/chksum
           sha256sum /opt/output/initrd-friend >> /opt/output/chksum
       - name: Upload FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
