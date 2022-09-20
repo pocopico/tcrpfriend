@@ -61,8 +61,8 @@ jobs:
           ls -ltr /opt/output
           touch /opt/output/chksum
           echo "VERSION=$VERSION" >> /opt/output/chksum
-          sha256sum bzImage-friend >> /opt/output/chksum
-          sha256sum initrd-friend >> /opt/output/chksum
+          sha256sum /opt/output/bzImage-friend >> /opt/output/chksum
+          sha256sum /opt/output/initrd-friend >> /opt/output/chksum
       - name: Upload FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
         uses: actions/upload-artifact@v3
         with:
