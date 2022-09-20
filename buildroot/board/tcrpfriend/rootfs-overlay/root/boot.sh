@@ -104,7 +104,7 @@ function extractramdisk() {
 
     if [ $(od /mnt/tcrp-p2/rd.gz | head -1 | awk '{print $2}') == "000135" ]; then
         echo "Ramdisk is compressed"
-        unlzma -dc /mnt/tcrp-p2/rd.gz 2>/dev/null | cpio -idm >/dev/null 2>&1
+        xz -dc /mnt/tcrp-p2/rd.gz 2>/dev/null | cpio -idm >/dev/null 2>&1
     else
         sudo cat /mnt/tcrp-p2/rd.gz | cpio -idm 2>&1 >/dev/null
     fi
@@ -183,7 +183,7 @@ function patchramdisk() {
 
     echo "Adding custom.gz to image"
     cd $temprd
-    cat /mnt/tcrp-p1/custom.gz | cpio -idm
+    cat /mnt/tcrp-p1/custom.gz | cpio -idm >/dev/null 2>&1
 
     for script in $(find /root/rd.temp/exts/ | grep ".sh"); do chmod +x $script; done
     chmod +x $temprd/usr/sbin/modprobe
