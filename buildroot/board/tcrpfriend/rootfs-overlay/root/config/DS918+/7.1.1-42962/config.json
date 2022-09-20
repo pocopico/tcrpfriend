@@ -36,9 +36,6 @@
     "maxdisks": "16",
     "internalportcfg": "0xffff",
     "esataportcfg": "0x0",
-    "HddHotplug": "",
-    "support_led_brightness_adjustment": "",
-    "support_leds_lp3943": "",
     "buzzeroffen": "0xffff",
     "rss_server": "http://example.com/null.xml",
     "rss_server_ssl": "https://example.com/null.xml",
@@ -86,7 +83,7 @@
           "log_buf_len": "32M"
         }
       },
-      "RedPill DS918+ v7.1.0-42962 (SATA, Verbose)": {
+      "RedPill DS918+ v7.1.1-42962 (SATA, Verbose)": {
         "options": [
           "savedefault",
           "set root=(hd0,msdos1)",
