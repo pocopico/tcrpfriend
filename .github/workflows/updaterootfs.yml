@@ -52,16 +52,17 @@ jobs:
           VERSION="`cat /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/VERSION`"
           echo "Version: ${VERSION}"
           echo "::set-output name=VERSION::${VERSION}"
-          touch /opt/output/chksum
-          echo "VERSION=$VERSION" >> /opt/output/chksum
-          sha256sum zImage-friend >> /opt/output/chksum
-          sha256sum initrd-friend >> /opt/output/chksum
+          
       - name: Recreate Ramdisk
         run: |
           mkdir /opt/output
           echo "Recreating ramdisk " && cd /opt/updaterootfs/temprd && sudo find . 2>/dev/null | sudo cpio -o -H newc -R root:root | xz -9 --format=lzma >/opt/output/initrd-friend
           cp /opt/updaterootfs/bzImage-friend /opt/output
           ls -ltr /opt/output
+          touch /opt/output/chksum
+          echo "VERSION=$VERSION" >> /opt/output/chksum
+          sha256sum zImage-friend >> /opt/output/chksum
+          sha256sum initrd-friend >> /opt/output/chksum
       - name: Upload FriendFiles-${{ steps.updaterootfs.outputs.VERSION }}
         uses: actions/upload-artifact@v3
         with:
