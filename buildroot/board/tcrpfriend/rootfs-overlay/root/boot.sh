@@ -103,7 +103,8 @@ function extractramdisk() {
     cd $temprd
 
     if [ $(od /mnt/tcrp-p2/rd.gz | head -1 | awk '{print $2}') == "000135" ]; then
-        unlzma -dc /mnt/tcrp-p2/rd.gz | cpio -idm >/dev/null 2>&1
+        echo "Ramdisk is compressed"
+        unlzma -dc /mnt/tcrp-p2/rd.gz 2>/dev/null | cpio -idm >/dev/null 2>&1
     else
         sudo cat /mnt/tcrp-p2/rd.gz | cpio -idm 2>&1 >/dev/null
     fi
@@ -309,7 +310,7 @@ getip() {
     # Wait for an IP
     COUNT=0
     while true; do
-        if [ ${COUNT} -eq 5 ]; then
+        if [ ${COUNT} -eq 15 ]; then
             echo "ERROR Could get IP"
             break
         fi
@@ -378,8 +379,6 @@ setmac() {
             (/etc/init.d/S41dhcpcd restart >/dev/null 2>&1 &) || true
     fi
 
-    ipaddress=$(ip route get 1.1.1.1 2>/dev/null | awk '{print$7}')
-
 }
 
 readconfig() {
@@ -434,7 +433,7 @@ function boot() {
     export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-dsm"
     export MOD_RDGZ_FILE="/mnt/tcrp/initrd-dsm"
 
-    echo "IP Address : ${ipaddress}"
+    echo "IP Address : ${IP}"
     echo "Model : $model , Serial : $serial, Mac : $mac1 DSM Version : $version "
     echo "Loader BUS: $LOADER_BUS "
     echo "zImage : ${MOD_ZIMAGE_FILE} initrd : ${MOD_RDGZ_FILE}"
