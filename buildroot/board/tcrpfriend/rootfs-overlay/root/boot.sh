@@ -199,6 +199,7 @@ function patchramdisk() {
     echo "Copying file to ${LOADER_DISK}3"
 
     cp -f /root/initrd-dsm /mnt/tcrp
+    cp -f /root/initrd-dsm /mnt/tcrp-p1/rd.gz
     cd /root && rm -rf $temprd
 
     origrdhash=$(sha256sum /mnt/tcrp-p2/rd.gz | awk '{print $1}')
@@ -209,6 +210,8 @@ function patchramdisk() {
     updateuserconfigfield "general" "version" "${major}.${minor}.${micro}-${buildnumber}"
 
     version="${major}.${minor}.${micro}-${buildnumber}"
+
+    updategrubconf
 
 }
 
@@ -224,6 +227,14 @@ function updateuserconfig() {
             echo $jsonfile | jq . >$userconfigfile
         done
     fi
+}
+
+function updategrubconf() {
+
+    curgrubver="$(grep menuentry /mnt/tcrp-p1/boot/grub/grub.cfg | grep RedPill | head -1 | awk '{print $4}')"
+    echo "Updating grub version values from: $curgrubver to $version"
+    sed -i "s/$curgrubver/$version/g" /mnt/tcrp-p1/boot/grub/grub.cfg
+
 }
 
 function updateuserconfigfield() {
