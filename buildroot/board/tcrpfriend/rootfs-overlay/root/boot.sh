@@ -26,13 +26,37 @@ EOF
 }
 
 function msgalert() {
-    echo -en "\033[1;31m$1\033[0m"
+    echo -en " \033[1;31m$1\033[0m "
 }
 function msgwarning() {
-    echo -en "\033[1;33m$1\033[0m"
+    echo -en " \033[1;33m$1\033[0m "
 }
 function msgnormal() {
-    echo -en "\033[1;32m$1\033[0m"
+    echo -en " \033[1;32m$1\033[0m "
+}
+
+function upgradefriend() {
+    echo -n "Checking for latest friend"
+    URL=$(curl -s --insecure -L https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r -e .assets[].browser_download_url | grep chksum)
+    curl -s --insecure -L $URL -O
+    FRIENDVERSION="$(grep VERSION chksum | awk -F= '{print $2}')"
+    BZIMAGESHA256="$(grep bzImage-friend chksum | awk '{print $1}')"
+    INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
+    if [ "$(sha256sum /mnt/tcrp/bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum /mnt/tcrp/initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ]; then
+        msgnormal "OK, latest "
+    else
+        msgwarning "Found new version, bringing over"
+        URLS=$(curl --insecure -s https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r ".assets[].browser_download_url")
+        for file in $URLS; do curl --insecure --location --progress-bar "$file" -O; done
+        FRIENDVERSION="$(grep VERSION chksum | awk -F= '{print $2}')"
+        BZIMAGESHA256="$(grep bzImage-friend chksum | awk '{print $1}')"
+        INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
+        [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f bzImage-friend /mnt/tcrp/ && msgnormal "bzImage OK!"
+        [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f initrd-friend /mnt/tcrp/ && msgnormal "initrd-friend OK!"
+        msgnormal "TCRP FRIEND HAS BEEN UPDATED, PRESS ENTER FOR REBOOT TO TAKE EFFECT OR CTRL-C TO ABORT"
+        read answer
+        reboot -f
+    fi
 }
 
 function getstaticmodule() {
@@ -362,14 +386,14 @@ checkupgrade() {
     if [ "$rdhash" = "$origrdhash" ]; then
         msgnormal "Ramdisk OK ! "
     else
-        msgwarning "Ramdisk upgrade has been detected "
+        msgwarning "Ramdisk upgrade has been detected \n"
         patchramdisk 2>&1 >>$FRIENDLOG
     fi
 
     if [ "$zimghash" = "$origzimghash" ]; then
         msgnormal "zImage OK ! "
     else
-        msgwarning "zImage upgrade has been detected "
+        msgwarning "zImage upgrade has been detected \n"
         patchkernel 2>&1 >>$FRIENDLOG
     fi
 
@@ -443,9 +467,9 @@ function boot() {
     export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-dsm"
     export MOD_RDGZ_FILE="/mnt/tcrp/initrd-dsm"
 
-    msgnormal "IP Address : ${IP}"
+    msgnormal "IP Address : ${IP}\n"
     echo -n "Model : $model , Serial : $serial, Mac : $mac1"
-    msgnormal " DSM Version : $version "
+    msgnormal " DSM Version : $version \n"
     echo "Loader BUS: $LOADER_BUS "
     echo "zImage : ${MOD_ZIMAGE_FILE} initrd : ${MOD_RDGZ_FILE}"
     echo "cmdline : ${CMDLINE_LINE}"
@@ -474,6 +498,9 @@ function initialize() {
 
     # Echo Version
     echo "TCRP Friend Version : $BOOTVER"
+
+    # check if new TCRP Friend version is available to download
+    upgradefriend
 
     # Check ip upgrade is required
     checkupgrade
