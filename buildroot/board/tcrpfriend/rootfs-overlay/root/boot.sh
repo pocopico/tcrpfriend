@@ -355,7 +355,7 @@ getip() {
     COUNT=0
     while true; do
         if [ ${COUNT} -eq 15 ]; then
-            msgalert "ERROR Could get IP"
+            msgalert "ERROR Could not get IP\n"
             break
         fi
         COUNT=$((${COUNT} + 1))
@@ -396,7 +396,7 @@ checkupgrade() {
     if [ "$rdhash" = "$origrdhash" ]; then
         msgnormal "Ramdisk OK ! "
     else
-        msgwarning "Ramdisk upgrade has been detected \n"
+        msgwarning "Ramdisk upgrade has been detected "
         patchramdisk 2>&1 >>$FRIENDLOG
     fi
 
