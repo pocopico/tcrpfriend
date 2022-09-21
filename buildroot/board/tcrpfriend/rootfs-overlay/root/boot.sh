@@ -25,6 +25,16 @@ function history() {
 EOF
 }
 
+function msgalert() {
+    echo -en "\033[1;31m$1\033[0m"
+}
+function msgwarning() {
+    echo -en "\033[1;33m$1\033[0m"
+}
+function msgnormal() {
+    echo -en "\033[1;32m$1\033[0m"
+}
+
 function getstaticmodule() {
     redpillextension="https://github.com/pocopico/rp-ext/raw/main/redpill/rpext-index.json"
     SYNOMODEL="$(echo $model | sed -e 's/+/p/g' | tr '[:upper:]' '[:lower:]')_${buildnumber}"
@@ -311,7 +321,7 @@ getip() {
     COUNT=0
     while true; do
         if [ ${COUNT} -eq 15 ]; then
-            echo "ERROR Could get IP"
+            msgalert "ERROR Could get IP"
             break
         fi
         COUNT=$((${COUNT} + 1))
@@ -330,9 +340,9 @@ checkfiles() {
 
     for file in $files; do
         if [ -f /mnt/tcrp/$file ]; then
-            echo "File : $file OK !"
+            msgnormal "File : $file OK !"
         else
-            echo "File : $file missing  !"
+            msgnormal "File : $file missing  !"
             exit 99
         fi
 
@@ -347,19 +357,19 @@ checkupgrade() {
     rdhash="$(jq -r -e '.general .rdhash' $userconfigfile)"
     zimghash="$(jq -r -e '.general .zimghash' $userconfigfile)"
 
-    echo -n "Detect upgrade : "
+    echo -n "Detecting upgrade : "
 
     if [ "$rdhash" = "$origrdhash" ]; then
-        echo -n "Ramdisk OK ! "
+        msgnormal "Ramdisk OK ! "
     else
-        echo "Ramdisk upgrade has been detected "
+        msgwarning "Ramdisk upgrade has been detected "
         patchramdisk 2>&1 >>$FRIENDLOG
     fi
 
     if [ "$zimghash" = "$origzimghash" ]; then
-        echo "zImage OK ! "
+        msgnormal "zImage OK ! "
     else
-        echo "zImage upgrade has been detected "
+        msgwarning "zImage upgrade has been detected "
         patchkernel 2>&1 >>$FRIENDLOG
     fi
 
@@ -433,8 +443,9 @@ function boot() {
     export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-dsm"
     export MOD_RDGZ_FILE="/mnt/tcrp/initrd-dsm"
 
-    echo "IP Address : ${IP}"
-    echo "Model : $model , Serial : $serial, Mac : $mac1 DSM Version : $version "
+    msgnormal "IP Address : ${IP}"
+    echo -n "Model : $model , Serial : $serial, Mac : $mac1"
+    msgnormal " DSM Version : $version "
     echo "Loader BUS: $LOADER_BUS "
     echo "zImage : ${MOD_ZIMAGE_FILE} initrd : ${MOD_RDGZ_FILE}"
     echo "cmdline : ${CMDLINE_LINE}"
