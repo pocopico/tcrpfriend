@@ -43,7 +43,7 @@ function upgradefriend() {
     BZIMAGESHA256="$(grep bzImage-friend chksum | awk '{print $1}')"
     INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
     if [ "$(sha256sum /mnt/tcrp/bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum /mnt/tcrp/initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ]; then
-        msgnormal "OK, latest "
+        msgnormal "OK, latest \n"
     else
         msgwarning "Found new version, bringing over"
         URLS=$(curl --insecure -s https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r ".assets[].browser_download_url")
