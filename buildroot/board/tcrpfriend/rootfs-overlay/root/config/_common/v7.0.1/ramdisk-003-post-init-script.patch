@@ -1,9 +1,9 @@
---- a/usr/sbin/init.post
-+++ b/usr/sbin/init.post
-@@ -18,6 +18,29 @@ if [ "$UniqueRD" = "nextkvmx64" ]; then
- fi
- Mount "$RootDevice" /tmpRoot -o barrier=1
- 
+--- /usr/sbin/init.post
++++ /usr/sbin/init.post
+@@ -31,6 +31,29 @@
+ OptPrjQuota="$(GetPQMountOpt "${RootMountPath}")"
+ # shellcheck disable=SC2046
+ Mount "${RootMountPath}" /tmpRoot -o barrier=1 ${OptPrjQuota}
 +############################################################################################
 +SED_PATH='/tmpRoot/usr/bin/sed'
 +
@@ -27,6 +27,6 @@
 +(/bin/sh /exts/exec.sh on_os_load_scripts && echo "OS load extensions processed") || Exit 99 "rp ext post exec failure"
 +############################################################################################
 +
+
  Mkdir -p /tmpRoot/initrd
- 
- Umount /proc >/dev/null 2>&1
+
