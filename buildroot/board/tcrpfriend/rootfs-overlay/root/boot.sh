@@ -26,42 +26,46 @@ EOF
 }
 
 function msgalert() {
-    echo -en " \033[1;31m$1\033[0m "
+    echo -en "\033[1;31m$1\033[0m"
 }
 function msgwarning() {
-    echo -en " \033[1;33m$1\033[0m "
+    echo -en "\033[1;33m$1\033[0m"
 }
 function msgnormal() {
-    echo -en " \033[1;32m$1\033[0m "
+    echo -en "\033[1;32m$1\033[0m"
 }
 
 function upgradefriend() {
 
     if [ ! -z "$IP" ]; then
-        echo -n "Checking for latest friend"
+
+        echo -n "Checking for latest friend -> "
         URL=$(curl -s --insecure -L https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r -e .assets[].browser_download_url | grep chksum)
         curl -s --insecure -L $URL -O
-        FRIENDVERSION="$(grep VERSION chksum | awk -F= '{print $2}')"
-        BZIMAGESHA256="$(grep bzImage-friend chksum | awk '{print $1}')"
-        INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
-        if [ "$(sha256sum /mnt/tcrp/bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum /mnt/tcrp/initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ]; then
-            msgnormal "OK, latest \n"
-        else
-            msgwarning "Found new version, bringing over new friend version : $FRIENDVERSION \n"
-            URLS=$(curl --insecure -s https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r ".assets[].browser_download_url")
-            for file in $URLS; do curl --insecure --location --progress-bar "$file" -O; done
+
+        if [ -f chksum ]; then
             FRIENDVERSION="$(grep VERSION chksum | awk -F= '{print $2}')"
             BZIMAGESHA256="$(grep bzImage-friend chksum | awk '{print $1}')"
             INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
-            [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f bzImage-friend /mnt/tcrp/ && msgnormal "bzImage OK!"
-            [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f initrd-friend /mnt/tcrp/ && msgnormal "initrd-friend OK!"
-            msgnormal "TCRP FRIEND HAS BEEN UPDATED, PRESS ENTER FOR REBOOT TO TAKE EFFECT OR CTRL-C TO ABORT"
-            read answer
-            msgwarning "OK Goind for reboot !\n"
-            reboot -f
+            if [ "$(sha256sum /mnt/tcrp/bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum /mnt/tcrp/initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ]; then
+                msgnormal "OK, latest \n"
+            else
+                msgwarning "Found new version, bringing over new friend version : $FRIENDVERSION \n"
+                URLS=$(curl --insecure -s https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r ".assets[].browser_download_url")
+                for file in $URLS; do curl --insecure --location --progress-bar "$file" -O; done
+                FRIENDVERSION="$(grep VERSION chksum | awk -F= '{print $2}')"
+                BZIMAGESHA256="$(grep bzImage-friend chksum | awk '{print $1}')"
+                INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
+                [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f bzImage-friend /mnt/tcrp/ && msgnormal "bzImage OK!"
+                [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f initrd-friend /mnt/tcrp/ && msgnormal "initrd-friend OK!"
+                msgnormal "TCRP FRIEND HAS BEEN UPDATED, PRESS ENTER FOR REBOOT TO TAKE EFFECT OR CTRL-C TO ABORT"
+                read answer
+                msgwarning "OK Goind for reboot !\n"
+                reboot -f
+            fi
+        else
+            msgalert "No IP yet to check for latest friend \n"
         fi
-    else
-        echo "No IP yet to check for latest friend"
     fi
 }
 
