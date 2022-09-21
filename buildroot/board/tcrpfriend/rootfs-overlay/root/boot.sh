@@ -36,26 +36,32 @@ function msgnormal() {
 }
 
 function upgradefriend() {
-    echo -n "Checking for latest friend"
-    URL=$(curl -s --insecure -L https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r -e .assets[].browser_download_url | grep chksum)
-    curl -s --insecure -L $URL -O
-    FRIENDVERSION="$(grep VERSION chksum | awk -F= '{print $2}')"
-    BZIMAGESHA256="$(grep bzImage-friend chksum | awk '{print $1}')"
-    INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
-    if [ "$(sha256sum /mnt/tcrp/bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum /mnt/tcrp/initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ]; then
-        msgnormal "OK, latest \n"
-    else
-        msgwarning "Found new version, bringing over"
-        URLS=$(curl --insecure -s https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r ".assets[].browser_download_url")
-        for file in $URLS; do curl --insecure --location --progress-bar "$file" -O; done
+
+    if [ ! -z "$IP" ]; then
+        echo -n "Checking for latest friend"
+        URL=$(curl -s --insecure -L https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r -e .assets[].browser_download_url | grep chksum)
+        curl -s --insecure -L $URL -O
         FRIENDVERSION="$(grep VERSION chksum | awk -F= '{print $2}')"
         BZIMAGESHA256="$(grep bzImage-friend chksum | awk '{print $1}')"
         INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
-        [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f bzImage-friend /mnt/tcrp/ && msgnormal "bzImage OK!"
-        [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f initrd-friend /mnt/tcrp/ && msgnormal "initrd-friend OK!"
-        msgnormal "TCRP FRIEND HAS BEEN UPDATED, PRESS ENTER FOR REBOOT TO TAKE EFFECT OR CTRL-C TO ABORT"
-        read answer
-        reboot -f
+        if [ "$(sha256sum /mnt/tcrp/bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum /mnt/tcrp/initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ]; then
+            msgnormal "OK, latest \n"
+        else
+            msgwarning "Found new version, bringing over new friend version : $FRIENDVERSION \n"
+            URLS=$(curl --insecure -s https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r ".assets[].browser_download_url")
+            for file in $URLS; do curl --insecure --location --progress-bar "$file" -O; done
+            FRIENDVERSION="$(grep VERSION chksum | awk -F= '{print $2}')"
+            BZIMAGESHA256="$(grep bzImage-friend chksum | awk '{print $1}')"
+            INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
+            [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f bzImage-friend /mnt/tcrp/ && msgnormal "bzImage OK!"
+            [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f initrd-friend /mnt/tcrp/ && msgnormal "initrd-friend OK!"
+            msgnormal "TCRP FRIEND HAS BEEN UPDATED, PRESS ENTER FOR REBOOT TO TAKE EFFECT OR CTRL-C TO ABORT"
+            read answer
+            msgwarning "OK Goind for reboot !\n"
+            reboot -f
+        fi
+    else
+        echo "No IP yet to check for latest friend"
     fi
 }
 
@@ -391,7 +397,7 @@ checkupgrade() {
     fi
 
     if [ "$zimghash" = "$origzimghash" ]; then
-        msgnormal "zImage OK ! "
+        msgnormal "zImage OK ! \n"
     else
         msgwarning "zImage upgrade has been detected \n"
         patchkernel 2>&1 >>$FRIENDLOG
@@ -499,9 +505,6 @@ function initialize() {
     # Echo Version
     echo "TCRP Friend Version : $BOOTVER"
 
-    # check if new TCRP Friend version is available to download
-    upgradefriend
-
     # Check ip upgrade is required
     checkupgrade
 
@@ -510,6 +513,9 @@ function initialize() {
 
     # Get IP Address after setting new mac address to display IP
     getip
+
+    # check if new TCRP Friend version is available to download
+    upgradefriend
 
     # Get USB list and set VID-PID Automatically
     getusb
