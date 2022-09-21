@@ -461,6 +461,9 @@ mountall() {
 
 function boot() {
 
+    # check if new TCRP Friend version is available to download
+    upgradefriend
+
     if grep -q "debugfriend" /proc/cmdline; then
         echo "Debug Friend set, stopping boot process"
         exit 0
@@ -517,9 +520,6 @@ function initialize() {
 
     # Get IP Address after setting new mac address to display IP
     getip
-
-    # check if new TCRP Friend version is available to download
-    upgradefriend
 
     # Get USB list and set VID-PID Automatically
     getusb
