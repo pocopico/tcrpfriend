@@ -58,9 +58,8 @@ function upgradefriend() {
                 INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
                 [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f bzImage-friend /mnt/tcrp/ && msgnormal "bzImage OK!"
                 [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f initrd-friend /mnt/tcrp/ && msgnormal "initrd-friend OK!"
-                msgnormal "TCRP FRIEND HAS BEEN UPDATED, PRESS ENTER FOR REBOOT TO TAKE EFFECT OR CTRL-C TO ABORT"
-                read answer
-                msgwarning "OK Goind for reboot !\n"
+                msgnormal "TCRP FRIEND HAS BEEN UPDATED, GOING FOR REBOOT\n"
+                countdown "REBOOT"
                 reboot -f
             fi
         else
@@ -301,7 +300,7 @@ function countdown() {
     let timeout=5
     while [ $timeout -ge 0 ]; do
         sleep 1
-        printf '\e[32m%s\e[0m\r' "Press <ctrl-c> to stop booting in : $timeout"
+        printf '\e[32m%s\e[0m\r' "Press <ctrl-c> to stop $1 in : $timeout"
         let timeout=$timeout-1
     done
 
@@ -487,7 +486,7 @@ function boot() {
     echo "zImage : ${MOD_ZIMAGE_FILE} initrd : ${MOD_RDGZ_FILE}"
     echo "cmdline : ${CMDLINE_LINE}"
 
-    countdown
+    countdown "booting"
 
     echo "Boot timeout exceeded, booting ... "
 
