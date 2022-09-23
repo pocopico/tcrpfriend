@@ -21,11 +21,12 @@
 
   "patches": {
     "zlinux": [
+      "zImage-001-2422p-42962-ramdisk-and-flag-NOP.bsp"
     ],
     "ramdisk": [
       "@@@COMMON@@@/ramdisk-001-disable-root-pwd.patch",
       "@@@COMMON@@@/v7.1.1/ramdisk-002-init-script.patch",
-      "@@@COMMON@@@/v7.1.1/ramdisk-003-post-init-script.patch"
+      "@@@COMMON@@@/v7.1.1/ramdisk-003-post-init-script-noatime.patch"
     ]
   },
 
@@ -59,22 +60,6 @@
     },
 
     "menu_entries": {
-      "RedPill DS2422+ v7.1.1-42962 Jun mod (USB, Verbose)": {
-        "options": [
-          "savedefault",
-          "set root=(hd0,2)",
-          "echo Loading Linux...",
-          "linux /bzImage @@@CMDLINE@@@",
-          "echo Loading initramfs...",
-          "initrd /rootfs.lzma",
-          "echo Starting kernel with USB boot"
-        ],
-        "cmdline": {
-          "earlyprintk": null,
-          "loglevel": 15,
-          "log_buf_len": "32M"
-        }
-      },
       "RedPill DS2422+ v7.1.1-42962 (USB, Verbose)": {
         "options": [
           "savedefault",

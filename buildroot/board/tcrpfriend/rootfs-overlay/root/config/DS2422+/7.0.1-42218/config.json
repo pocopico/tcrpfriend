@@ -15,12 +15,13 @@
       "sha256": "2b5b8dd90b2e6020ffccc2719d8bc16d9935421754a8c088d6b31dbca4e4ff7b"
     },
     "vmlinux": {
-      "sha256": ""
+      "sha256": "02750d0f2eb1126f4f4a29d9b6272edd7d2e47d6598befd330e8759e719e1d93"
     }
   },
 
   "patches": {
-    "zlinux": [
+    "zlinux": [ 
+     "zImage-001-2422p-42218-ramdisk-and-flag-NOP.bsp"
     ],
     "ramdisk": [
       "@@@COMMON@@@/ramdisk-001-disable-root-pwd.patch",
@@ -59,22 +60,6 @@
     },
 
     "menu_entries": {
-      "RedPill DS2422+ v7.0.1-42218 Jun mod (USB, Verbose)": {
-        "options": [
-          "savedefault",
-          "set root=(hd0,2)",
-          "echo Loading Linux...",
-          "linux /bzImage @@@CMDLINE@@@",
-          "echo Loading initramfs...",
-          "initrd /rootfs.lzma",
-          "echo Starting kernel with USB boot"
-        ],
-        "cmdline": {
-          "earlyprintk": null,
-          "loglevel": 15,
-          "log_buf_len": "32M"
-        }
-      },
       "RedPill DS2422+ v7.0.1-42218 (USB, Verbose)": {
         "options": [
           "savedefault",
