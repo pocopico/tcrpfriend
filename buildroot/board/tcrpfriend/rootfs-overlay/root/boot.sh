@@ -309,8 +309,10 @@ function countdown() {
 function gethw() {
 
     checkmachine
-    printf '\e[32m%s\e[0m' "IP ADDRESS : "
 
+    echo -ne "Loader BUS: $(msgnormal "$LOADER_BUS\n")"
+    echo -ne "Running on $(cat /proc/cpuinfo | grep "model name" | awk -F: '{print $2}' | wc -l) Processor $(cat /proc/cpuinfo | grep "model name" | awk -F: '{print $2}' | uniq) With $(free -h | grep Mem | awk '{print $2}') Memory\n"
+    echo -ne "System has $(lspci -nn | egrep -e 100 -e 106 | wc -l) HBAs and $(lspci -nn | egrep -e 200 | wc -l) Network cards\n"
 }
 
 function checkmachine() {
@@ -419,7 +421,7 @@ setmac() {
         MAC="${mac1:0:2}:${mac1:2:2}:${mac1:4:2}:${mac1:6:2}:${mac1:8:2}:${mac1:10:2}"
         echo "Setting MAC to ${MAC}"
         ip link set dev $ethdev address ${MAC} >/dev/null 2>&1 &&
-            (/etc/init.d/S41dhcpcd restart >/dev/null 2>&1 &) || true
+            (/etc/init.d/S41dhcpcd restart >/dev/null 2>&1) || true
     fi
 
 }
@@ -479,10 +481,11 @@ function boot() {
     export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-dsm"
     export MOD_RDGZ_FILE="/mnt/tcrp/initrd-dsm"
 
-    msgnormal "IP Address : ${IP}\n"
-    echo -n "Model : $model , Serial : $serial, Mac : $mac1"
-    msgnormal " DSM Version : $version \n"
-    echo "Loader BUS: $LOADER_BUS "
+    gethw
+
+    echo "IP Address : $(msgnormal "${IP}\n")"
+    echo -n "Model : $(msgnormal " $model") , Serial : $(msgnormal "$serial"), Mac : $(msgnormal "$mac1") DSM Version : $(msgnormal "$version\n")"
+
     echo "zImage : ${MOD_ZIMAGE_FILE} initrd : ${MOD_RDGZ_FILE}"
     echo "cmdline : ${CMDLINE_LINE}"
 
@@ -498,6 +501,16 @@ function boot() {
 
 }
 
+function welcome() {
+
+    clear
+    echo -en "\033[7;32m---------------------------------={ TinyCore RedPill Friend }=---------------------------------\033[0m\n"
+
+    # Echo Version
+    echo "TCRP Friend Version : $BOOTVER"
+
+}
+
 function initialize() {
     # Checkif running in TC
     [ "$(hostname)" != "tcrpfriend" ] && echo "ERROR running on alien system" && exit 99
@@ -508,8 +521,8 @@ function initialize() {
     # Read Configuration variables
     readconfig
 
-    # Echo Version
-    echo "TCRP Friend Version : $BOOTVER"
+    # Welcome message
+    welcome
 
     # Check ip upgrade is required
     checkupgrade
