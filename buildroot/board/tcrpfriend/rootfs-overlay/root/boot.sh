@@ -40,7 +40,7 @@ function upgradefriend() {
     if [ ! -z "$IP" ]; then
 
         echo -n "Checking for latest friend -> "
-        URL=$(curl -s --insecure -L https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r -e .assets[].browser_download_url | grep chksum)
+        URL=$(curl --connect-timeout 15 -s --insecure -L https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r -e .assets[].browser_download_url | grep chksum)
         curl -s --insecure -L $URL -O
 
         if [ -f chksum ]; then
