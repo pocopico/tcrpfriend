@@ -327,8 +327,6 @@ function checkmachine() {
 
 function getusb() {
 
-    checkmachine
-
     # Get the VID/PID if we are in USB
     VID="0x0000"
     PID="0x0000"
