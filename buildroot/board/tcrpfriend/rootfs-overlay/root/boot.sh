@@ -460,6 +460,21 @@ mountall() {
 
 function boot() {
 
+    # Welcome message
+    welcome
+
+    # Check ip upgrade is required
+    checkupgrade
+
+    # Set Mac Address according to user_config
+    setmac
+
+    # Get IP Address after setting new mac address to display IP
+    getip
+
+    # Get USB list and set VID-PID Automatically
+    getusb
+
     # check if new TCRP Friend version is available to download
     upgradefriend
 
@@ -519,20 +534,6 @@ function initialize() {
     # Read Configuration variables
     readconfig
 
-    # Welcome message
-    welcome
-
-    # Check ip upgrade is required
-    checkupgrade
-
-    # Set Mac Address according to user_config
-    setmac
-
-    # Get IP Address after setting new mac address to display IP
-    getip
-
-    # Get USB list and set VID-PID Automatically
-    getusb
 }
 
 case $1 in
