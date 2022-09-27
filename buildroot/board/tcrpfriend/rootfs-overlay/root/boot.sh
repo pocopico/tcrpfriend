@@ -58,8 +58,8 @@ function upgradefriend() {
                 FRIENDVERSION="$(grep VERSION chksum | awk -F= '{print $2}')"
                 BZIMAGESHA256="$(grep bzImage-friend chksum | awk '{print $1}')"
                 INITRDSHA256="$(grep initrd-friend chksum | awk '{print $1}')"
-                [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f bzImage-friend /mnt/tcrp/ && msgnormal "bzImage OK!"
-                [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f initrd-friend /mnt/tcrp/ && msgnormal "initrd-friend OK!"
+                [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f bzImage-friend /mnt/tcrp/ && msgnormal "bzImage OK! \n"
+                [ "$(sha256sum bzImage-friend | awk '{print $1}')" = "$BZIMAGESHA256" ] && [ "$(sha256sum initrd-friend | awk '{print $1}')" = "$INITRDSHA256" ] && cp -f initrd-friend /mnt/tcrp/ && msgnormal "initrd-friend OK! \n"
                 msgnormal "TCRP FRIEND HAS BEEN UPDATED, GOING FOR REBOOT\n"
                 countdown "REBOOT"
                 reboot -f
@@ -71,7 +71,7 @@ function upgradefriend() {
 }
 
 function getstaticmodule() {
-    redpillextension="https://github.com/pocopico/rp-ext/raw/main/redpill/rpext-index.json"
+    redpillextension="https://github.com/pocopico/rp-ext/raw/main/redpill${redpillmake}/rpext-index.json"
     SYNOMODEL="$(echo $model | sed -e 's/+/p/g' | tr '[:upper:]' '[:lower:]')_${buildnumber}"
 
     cd /root
@@ -268,7 +268,7 @@ function updateuserconfig() {
     if [ "$generalblock" = "null" ] || [ -n "$generalblock" ]; then
         echo "Result=${generalblock}, File does not contain general block, adding block"
 
-        for field in model version zimghash rdhash usb_line sata_line; do
+        for field in model version redpillmake zimghash rdhash usb_line sata_line; do
             jsonfile=$(jq ".general+={\"$field\":\"\"}" $userconfigfile)
             echo $jsonfile | jq . >$userconfigfile
         done
@@ -314,7 +314,7 @@ function gethw() {
 
     echo -ne "Loader BUS: $(msgnormal "$LOADER_BUS\n")"
     echo -ne "Running on $(cat /proc/cpuinfo | grep "model name" | awk -F: '{print $2}' | wc -l) Processor $(cat /proc/cpuinfo | grep "model name" | awk -F: '{print $2}' | uniq) With $(free -h | grep Mem | awk '{print $2}') Memory\n"
-    echo -ne "System has $(lspci -nn | egrep -e 100 -e 106 | wc -l) HBAs and $(lspci -nn | egrep -e 200 | wc -l) Network cards\n"
+    echo -ne "System has $(lspci -nn | egrep -e "\[0100\]" -e "\[0106\]" | wc -l) HBAs and $(lspci -nn | egrep -e "\[0200\]" | wc -l) Network cards\n"
 }
 
 function checkmachine() {
@@ -428,7 +428,7 @@ setmac() {
 
 readconfig() {
 
-    LOADER_DISK=$(fdisk -l | grep -v raid | grep -v W95 | grep Linux | grep 48M | cut -c 1-8 | awk -F\/ '{print $3}')
+    LOADER_DISK=$(blkid | grep "6234-C863" | cut -c 1-8 | awk -F\/ '{print $3}')
     LOADER_BUS="$(udevadm info --query property --name /dev/${LOADER_DISK} | grep -i ID_BUS | awk -F= '{print $2}')"
 
     userconfigfile=/mnt/tcrp/user_config.json
@@ -436,6 +436,7 @@ readconfig() {
     if [ -f $userconfigfile ]; then
         model="$(jq -r -e '.general .model' $userconfigfile)"
         version="$(jq -r -e '.general .version' $userconfigfile)"
+        redpillmake="$(jq -r -e '.general .redpillmake' $userconfigfile)"
         serial="$(jq -r -e '.extra_cmdline .sn' $userconfigfile)"
         rdhash="$(jq -r -e '.general .rdhash' $userconfigfile)"
         zimghash="$(jq -r -e '.general .zimghash' $userconfigfile)"
@@ -448,7 +449,7 @@ readconfig() {
 
 mountall() {
 
-    LOADER_DISK=$(fdisk -l | grep -v raid | grep -v W95 | grep Linux | grep 48M | cut -c 1-8 | awk -F\/ '{print $3}')
+    LOADER_DISK=$(blkid | grep "6234-C863" | cut -c 1-8 | awk -F\/ '{print $3}')
 
     [ ! -d /mnt/tcrp ] && mkdir /mnt/tcrp
     [ ! -d /mnt/tcrp-p1 ] && mkdir /mnt/tcrp-p1
