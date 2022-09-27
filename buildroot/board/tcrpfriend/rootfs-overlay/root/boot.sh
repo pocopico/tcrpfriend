@@ -8,6 +8,8 @@
 
 BOOTVER="0.0.1"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
+RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
+AUTOUPDATES="1"
 
 ###############################################################################
 
