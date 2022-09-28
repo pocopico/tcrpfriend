@@ -494,6 +494,10 @@ function boot() {
 
     [ "$1" = "forcejunior" ] && CMDLINE_LINE+=" force_junior "
 
+    # Check dom size and set max size accordingly
+
+    CMDLINE_LINE+=" dom_szmax=$(fdisk -l /dev/${LOADER_DISK} | head -1 | awk -F: '{print $2}' | awk '{ print $1*1024}') "
+
     export MOD_ZIMAGE_FILE="/mnt/tcrp/zImage-dsm"
     export MOD_RDGZ_FILE="/mnt/tcrp/initrd-dsm"
 
