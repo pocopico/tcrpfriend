@@ -58,7 +58,7 @@
     	    "SataPortMap": "1", 
             "DiskIdxMap": "0",
             "mac1": "",
-            "netif_num": 5,
+            "netif_num": 1,
 
             "syno_hw_version": "DS3622xs+",
             "syno_hdd_powerup_seq": 0,
