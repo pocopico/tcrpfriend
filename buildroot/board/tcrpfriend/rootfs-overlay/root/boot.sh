@@ -504,10 +504,20 @@ function boot() {
     gethw
 
     echo "IP Address : $(msgnormal "${IP}\n")"
-    echo -n "Model : $(msgnormal " $model") , Serial : $(msgnormal "$serial"), Mac : $(msgnormal "$mac1") DSM Version : $(msgnormal "$version\n")"
+    echo -n "Model : $(msgnormal " $model") , Serial : $(msgnormal "$serial"), Mac : $(msgnormal "$mac1") DSM Version : $(msgnormal "$version") RedPillMake : $(msgnormal "${redpillmake}\n")"
 
     echo "zImage : ${MOD_ZIMAGE_FILE} initrd : ${MOD_RDGZ_FILE}"
     echo "cmdline : ${CMDLINE_LINE}"
+
+    # Check netif_num matches the number of configured mac addresses as if these does not match redpill will cause a KP
+    echo ${CMDLINE_LINE} >/tmp/cmdline.out
+    while IFS=" " read -r -a line; do
+        printf "%s\n" "${line[@]}"
+    done </tmp/cmdline.out | egrep -i "sataportmap|sn|pid|vid|mac|hddhotplug|diskidxmap|netif_num" | sort >/tmp/cmdline.check
+
+    . /tmp/cmdline.check
+
+    [ $(grep mac /tmp/cmdline.check | wc -l) != $netif_num ] && msgalert "FAILED to match the count of configured netif_num and mac addresses, DSM will panic, exiting so you can fix this\n" && exit 99
 
     countdown "booting"
 
@@ -515,7 +525,12 @@ function boot() {
 
     echo "Loading kexec, nothing will be displayed here anymore ..."
 
-    kexec --noefi -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
+    if [ $(echo ${CMDLINE_LINE} | grep withefi | wc -l) -eq 1 ]; then
+        kexec -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
+    else
+        echo "Booting with noefi, please notice that this might cause issues"
+        kexec --noefi -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
+    fi
 
     kexec -e -a
 
