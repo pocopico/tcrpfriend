@@ -481,6 +481,8 @@ function boot() {
     # check if new TCRP Friend version is available to download
     upgradefriend
 
+    [ -f /mnt/tcrp/stopatfriend ] && echo "Stop at friend detected, stopping boot" && rm -f /mnt/tcrp/stopatfriend && exit 0
+
     if grep -q "debugfriend" /proc/cmdline; then
         echo "Debug Friend set, stopping boot process"
         exit 0
