@@ -28,13 +28,13 @@ EOF
 }
 
 function msgalert() {
-    echo -en "\033[1;31m$1\033[0m"
+    echo -en "\033[1;31m$1\033[0m" | tee -a boot.log
 }
 function msgwarning() {
-    echo -en "\033[1;33m$1\033[0m"
+    echo -en "\033[1;33m$1\033[0m" | tee -a boot.log
 }
 function msgnormal() {
-    echo -en "\033[1;32m$1\033[0m"
+    echo -en "\033[1;32m$1\033[0m" | tee -a boot.log
 }
 
 function upgradefriend() {
@@ -419,7 +419,7 @@ setmac() {
 
     if [ -n "${mac1}" ] && [ "${curmac}" != "${mac1}" ]; then
         MAC="${mac1:0:2}:${mac1:2:2}:${mac1:4:2}:${mac1:6:2}:${mac1:8:2}:${mac1:10:2}"
-        echo "Setting MAC to ${MAC}"
+        echo "Setting MAC from ${curmac} to ${MAC}" | tee -a boot.log
         ip link set dev $ethdev address ${MAC} >/dev/null 2>&1 &&
             (/etc/init.d/S41dhcpcd restart >/dev/null 2>&1) || true
     fi
@@ -481,7 +481,12 @@ function boot() {
     # check if new TCRP Friend version is available to download
     upgradefriend
 
-    [ -f /mnt/tcrp/stopatfriend ] && echo "Stop at friend detected, stopping boot" && rm -f /mnt/tcrp/stopatfriend && exit 0
+    if [ -f /mnt/tcrp/stopatfriend ]; then
+        echo "Stop at friend detected, stopping boot"
+        rm -f /mnt/tcrp/stopatfriend
+        touch /root/stoppedatrequest
+        exit 0
+    fi
 
     if grep -q "debugfriend" /proc/cmdline; then
         echo "Debug Friend set, stopping boot process"
