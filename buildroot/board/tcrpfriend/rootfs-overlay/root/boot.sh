@@ -28,13 +28,13 @@ EOF
 }
 
 function msgalert() {
-    echo -en "\033[1;31m$1\033[0m" | tee -a boot.log
+    echo -en "\033[1;31m$1\033[0m"
 }
 function msgwarning() {
-    echo -en "\033[1;33m$1\033[0m" | tee -a boot.log
+    echo -en "\033[1;33m$1\033[0m"
 }
 function msgnormal() {
-    echo -en "\033[1;32m$1\033[0m" | tee -a boot.log
+    echo -en "\033[1;32m$1\033[0m"
 }
 
 function upgradefriend() {
