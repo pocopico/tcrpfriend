@@ -503,6 +503,7 @@ function boot() {
     if [ "$(jq -r -e .ipsettings.ipset /mnt/tcrp/user_config.json)" = "static" ]; then
 
         setnetwork
+        getip
     else
         # Set Mac Address according to user_config
         setmac
