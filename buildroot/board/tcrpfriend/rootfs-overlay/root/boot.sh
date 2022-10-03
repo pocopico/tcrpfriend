@@ -439,7 +439,7 @@ setnetwork() {
 
     [ -n "$staticip" ] && ip a add "$staticip" dev $ethdev | tee -a boot.log
     [ -n "$staticdns" ] && sed -i "/domain/ a nameserver $staticdns" /etc/resolv.conf | tee -a boot.log
-    [ -n "$staticgw" ] && ip route add default gw $staticgw dev $ethdev | tee -a boot.log
+    [ -n "$staticgw" ] && ip route add default via $staticgw dev $ethdev | tee -a boot.log
     [ -n "$staticproxy" ] &&
         export HTTP_PROXY="$staticproxy" && export HTTPS_PROXY="$staticproxy" &&
         export http_proxy="$staticproxy" && export https_proxy="$staticproxy" | tee -a boot.log
