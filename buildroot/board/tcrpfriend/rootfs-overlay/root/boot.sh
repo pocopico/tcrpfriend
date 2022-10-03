@@ -43,7 +43,7 @@ function upgradefriend() {
 
         echo -n "Checking for latest friend -> "
         URL=$(curl --connect-timeout 15 -s --insecure -L https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r -e .assets[].browser_download_url | grep chksum)
-        curl -s --insecure -L $URL -O
+        [ -n "$URL" ] && curl -s --insecure -L $URL -O
 
         if [ -f chksum ]; then
             FRIENDVERSION="$(grep VERSION chksum | awk -F= '{print $2}')"
@@ -427,6 +427,27 @@ setmac() {
 
 }
 
+setnetwork() {
+
+    ethdev=$(ip a | grep UP | grep -v LOOP | head -1 | awk '{print $2}' | sed -e 's/://g')
+
+    echo "Network settings are set to static proceeding setting static IP settings" | tee -a boot.log
+    staticip="$(jq -r -e .ipsettings.ipaddr /mnt/tcrp/user_config.json)"
+    staticdns="$(jq -r -e .ipsettings.ipdns /mnt/tcrp/user_config.json)"
+    staticgw="$(jq -r -e .ipsettings.ipgw /mnt/tcrp/user_config.json)"
+    staticproxy="$(jq -r -e .ipsettings.ipproxy /mnt/tcrp/user_config.json)"
+
+    [ -n "$staticip" ] && ip a add "$staticip" dev $ethdev | tee -a boot.log
+    [ -n "$staticdns" ] && sed -i "/domain/ a nameserver $staticdns" /etc/resolv.conf | tee -a boot.log
+    [ -n "$staticgw" ] && ip route add default gw $staticgw dev $ethdev | tee -a boot.log
+    [ -n "$staticproxy" ] &&
+        export HTTP_PROXY="$staticproxy" && export HTTPS_PROXY="$staticproxy" &&
+        export http_proxy="$staticproxy" && export https_proxy="$staticproxy" | tee -a boot.log
+
+    IP="$(ip route get 1.1.1.1 2>/dev/null | grep $ethdev | awk '{print $7}')"
+
+}
+
 readconfig() {
 
     LOADER_DISK=$(blkid | grep "6234-C863" | cut -c 1-8 | awk -F\/ '{print $3}')
@@ -469,12 +490,26 @@ function boot() {
 
     # Check ip upgrade is required
     checkupgrade
+    # user_config.json ipsettings block
 
-    # Set Mac Address according to user_config
-    setmac
+    #  "ipsettings" : {
+    #     "ipset": "static",
+    #     "ipaddr":"192.168.71.146/24",
+    #     "ipgw" : "192.168.71.1",
+    #     "ipdns": "",
+    #     "ipproxy" : ""
+    # },
 
-    # Get IP Address after setting new mac address to display IP
-    getip
+    if [ "$(jq -r -e .ipsettings.ipset /mnt/tcrp/user_config.json)" = "static" ]; then
+
+        setnetwork
+    else
+        # Set Mac Address according to user_config
+        setmac
+
+        # Get IP Address after setting new mac address to display IP
+        getip
+    fi
 
     # Get USB list and set VID-PID Automatically
     getusb
