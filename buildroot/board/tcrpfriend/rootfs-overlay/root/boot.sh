@@ -414,11 +414,12 @@ setmac() {
 
     # Set custom MAC if defined
 
-    ethdev=$(ip a | grep UP | grep -v LOOP | head -1 | awk '{print $2}' | sed -e 's/://g')
+    ethdev=$(ip a | grep UP | grep -vi LOOP | head -1 | awk '{print $2}' | sed -e 's/://g')
     curmac=$(ip link | grep -A 1 $ethdev | tail -1 | awk '{print $2}' | sed -e 's/://g' | tr '[:lower:]' '[:upper:]')
+    MAC="${mac1:0:2}:${mac1:2:2}:${mac1:4:2}:${mac1:6:2}:${mac1:8:2}:${mac1:10:2}"
+    ISMACREAL="$(ip a | grep link | grep -v loop | awk '{print $2}' | grep "${MAC}" | wc -l)"
 
-    if [ -n "${mac1}" ] && [ "${curmac}" != "${mac1}" ]; then
-        MAC="${mac1:0:2}:${mac1:2:2}:${mac1:4:2}:${mac1:6:2}:${mac1:8:2}:${mac1:10:2}"
+    if [ -n "${mac1}" ] && [ "${curmac}" != "${mac1}" ] && [ $ISMACREAL -eq 0 ]; then
         echo "Setting MAC from ${curmac} to ${MAC}" | tee -a boot.log
         ip link set dev $ethdev address ${MAC} >/dev/null 2>&1 &&
             (/etc/init.d/S41dhcpcd restart >/dev/null 2>&1) || true
