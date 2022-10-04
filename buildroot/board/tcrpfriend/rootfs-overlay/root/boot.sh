@@ -488,8 +488,6 @@ function boot() {
     # Welcome message
     welcome
 
-    # Check ip upgrade is required
-    checkupgrade
     # user_config.json ipsettings block
     # user_config.json ipsettings block
 
@@ -512,6 +510,9 @@ function boot() {
         # Get IP Address after setting new mac address to display IP
         getip
     fi
+
+    # Check ip upgrade is required
+    checkupgrade
 
     # Get USB list and set VID-PID Automatically
     getusb
