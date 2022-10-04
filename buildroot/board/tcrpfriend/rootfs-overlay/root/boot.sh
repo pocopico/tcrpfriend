@@ -437,9 +437,9 @@ setnetwork() {
     staticgw="$(jq -r -e .ipsettings.ipgw /mnt/tcrp/user_config.json)"
     staticproxy="$(jq -r -e .ipsettings.ipproxy /mnt/tcrp/user_config.json)"
 
-    [ -n "$staticip" ] && ip a add "$staticip" dev $ethdev | tee -a boot.log
-    [ -n "$staticdns" ] && sed -i "/domain/ a nameserver $staticdns" /etc/resolv.conf | tee -a boot.log
-    [ -n "$staticgw" ] && ip route add default via $staticgw dev $ethdev | tee -a boot.log
+    [ -n "$staticip" ] && [ $(ip a | grep $staticip | wc -l) -eq 0 ] && ip a add "$staticip" dev $ethdev | tee -a boot.log
+    [ -n "$staticdns" ] && [ $(grep ${staticdns} /etc/resolv.conf | wc -l) -eq 0 ] && sed -i "a nameserver $staticdns" /etc/resolv.conf | tee -a boot.log
+    [ -n "$staticgw" ] && [ $(ip route | grep "default via ${staticgw}" | wc -l) -eq 0 ] && ip route add default via $staticgw dev $ethdev | tee -a boot.log
     [ -n "$staticproxy" ] &&
         export HTTP_PROXY="$staticproxy" && export HTTPS_PROXY="$staticproxy" &&
         export http_proxy="$staticproxy" && export https_proxy="$staticproxy" | tee -a boot.log
