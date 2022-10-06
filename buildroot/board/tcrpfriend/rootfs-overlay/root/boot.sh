@@ -1,17 +1,15 @@
 #!/bin/bash
 #
 # Author :
-# Date : 221001
-# Version : 0.0.1
+# Date : 221006
+# Version : 0.0.2
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.1"
+BOOTVER="0.0.2"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
-
-###############################################################################
 
 function version() {
     shift 1
@@ -23,6 +21,9 @@ function history() {
     cat <<EOF
     --------------------------------------------------------------------------------------
     0.0.1 Initial Release
+    0.0.2 Added the option to disable TCRP Friend auto update. Default if true.
+
+    Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
 EOF
 }
@@ -40,6 +41,13 @@ function msgnormal() {
 function upgradefriend() {
 
     if [ ! -z "$IP" ]; then
+
+        if [ "${friendautoupd}" = "true" ]; then
+            friendwillupdate="1"
+        else
+            msgwarning "TCRP Friend auto update disabled\n"
+            return
+        fi
 
         echo -n "Checking for latest friend -> "
         URL=$(curl --connect-timeout 15 -s --insecure -L https://api.github.com/repos/pocopico/tcrpfriend/releases/latest | jq -r -e .assets[].browser_download_url | grep chksum)
@@ -459,6 +467,7 @@ readconfig() {
         model="$(jq -r -e '.general .model' $userconfigfile)"
         version="$(jq -r -e '.general .version' $userconfigfile)"
         redpillmake="$(jq -r -e '.general .redpillmake' $userconfigfile)"
+        friendautoupd="$(jq -r -e '.general .friendautoupd' $userconfigfile)"
         serial="$(jq -r -e '.extra_cmdline .sn' $userconfigfile)"
         rdhash="$(jq -r -e '.general .rdhash' $userconfigfile)"
         zimghash="$(jq -r -e '.general .zimghash' $userconfigfile)"
