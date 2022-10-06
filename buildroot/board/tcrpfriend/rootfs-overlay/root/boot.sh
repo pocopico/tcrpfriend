@@ -42,11 +42,11 @@ function upgradefriend() {
 
     if [ ! -z "$IP" ]; then
 
-        if [ "${friendautoupd}" = "true" ]; then
-            friendwillupdate="1"
-        else
+        if [ "${friendautoupd}" = "false" ]; then
             msgwarning "TCRP Friend auto update disabled\n"
             return
+        else
+            friendwillupdate="1"
         fi
 
         echo -n "Checking for latest friend -> "
