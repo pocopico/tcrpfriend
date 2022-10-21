@@ -1,12 +1,12 @@
 #!/bin/bash
 #
 # Author :
-# Date : 221006
-# Version : 0.0.2
+# Date : 221021
+# Version : 0.0.3
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.2"
+BOOTVER="0.0.3"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
@@ -22,6 +22,7 @@ function history() {
     --------------------------------------------------------------------------------------
     0.0.1 Initial Release
     0.0.2 Added the option to disable TCRP Friend auto update. Default if true.
+    0.0.3 Added smallfixnumber to display current update version on boot
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
@@ -171,6 +172,7 @@ function extractramdisk() {
     fi
 
     version="${major}.${minor}.${micro}-${buildnumber}"
+    smallfixnumber="${smallfixnumber}"
 
 }
 
@@ -191,6 +193,7 @@ function patchramdisk() {
     echo "Patches to be applied : $PATCHES"
 
     cd $temprd
+    . $temprd/etc/VERSION
     for patch in $PATCHES; do
         echo "Applying patch $patch in dir $PWD"
         patch -p1 <$patch
@@ -258,13 +261,13 @@ function patchramdisk() {
 
     origrdhash=$(sha256sum /mnt/tcrp-p2/rd.gz | awk '{print $1}')
     origzimghash=$(sha256sum /mnt/tcrp-p2/zImage | awk '{print $1}')
+    version="${major}.${minor}.${micro}-${buildnumber}"
+    smallfixnumber="${smallfixnumber}"
 
     updateuserconfigfield "general" "rdhash" "$origrdhash"
     updateuserconfigfield "general" "zimghash" "$origzimghash"
     updateuserconfigfield "general" "version" "${major}.${minor}.${micro}-${buildnumber}"
-
-    version="${major}.${minor}.${micro}-${buildnumber}"
-
+    updateuserconfigfield "general" "smallfixnumber" "${smallfixnumber}"
     updategrubconf
 
 }
@@ -276,7 +279,7 @@ function updateuserconfig() {
     if [ "$generalblock" = "null" ] || [ -n "$generalblock" ]; then
         echo "Result=${generalblock}, File does not contain general block, adding block"
 
-        for field in model version redpillmake zimghash rdhash usb_line sata_line; do
+        for field in model version smallfixnumber redpillmake zimghash rdhash usb_line sata_line; do
             jsonfile=$(jq ".general+={\"$field\":\"\"}" $userconfigfile)
             echo $jsonfile | jq . >$userconfigfile
         done
@@ -466,6 +469,7 @@ readconfig() {
     if [ -f $userconfigfile ]; then
         model="$(jq -r -e '.general .model' $userconfigfile)"
         version="$(jq -r -e '.general .version' $userconfigfile)"
+        smallfixnumber="$(jq -r -e '.general .smallfixnumber' $userconfigfile)"
         redpillmake="$(jq -r -e '.general .redpillmake' $userconfigfile)"
         friendautoupd="$(jq -r -e '.general .friendautoupd' $userconfigfile)"
         serial="$(jq -r -e '.extra_cmdline .sn' $userconfigfile)"
@@ -559,7 +563,7 @@ function boot() {
     gethw
 
     echo "IP Address : $(msgnormal "${IP}\n")"
-    echo -n "Model : $(msgnormal " $model") , Serial : $(msgnormal "$serial"), Mac : $(msgnormal "$mac1") DSM Version : $(msgnormal "$version") RedPillMake : $(msgnormal "${redpillmake}\n")"
+    echo -n "Model : $(msgnormal " $model") , Serial : $(msgnormal "$serial"), Mac : $(msgnormal "$mac1") DSM Version : $(msgnormal "$version") Update : $(msgnormal "$smallfixnumber") RedPillMake : $(msgnormal "${redpillmake}\n")"
 
     echo "zImage : ${MOD_ZIMAGE_FILE} initrd : ${MOD_RDGZ_FILE}"
     echo "cmdline : ${CMDLINE_LINE}"
