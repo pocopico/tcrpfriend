@@ -615,6 +615,8 @@ function initialize() {
     # Read Configuration variables
     readconfig
 
+    [ "${smallfixnumber}" = "null" ] && patchramdisk 2>&1 >>$FRIENDLOG
+
 }
 
 case $1 in
