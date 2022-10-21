@@ -472,6 +472,7 @@ readconfig() {
         smallfixnumber="$(jq -r -e '.general .smallfixnumber' $userconfigfile)"
         redpillmake="$(jq -r -e '.general .redpillmake' $userconfigfile)"
         friendautoupd="$(jq -r -e '.general .friendautoupd' $userconfigfile)"
+        hidesensitive="$(jq -r -e '.general .hidesensitive' $userconfigfile)"
         serial="$(jq -r -e '.extra_cmdline .sn' $userconfigfile)"
         rdhash="$(jq -r -e '.general .rdhash' $userconfigfile)"
         zimghash="$(jq -r -e '.general .zimghash' $userconfigfile)"
@@ -583,6 +584,8 @@ function boot() {
     echo "Boot timeout exceeded, booting ... "
 
     echo "Loading kexec, nothing will be displayed here anymore ..."
+
+    [ "${hidesensitive}" = "true" ] && clear
 
     if [ $(echo ${CMDLINE_LINE} | grep withefi | wc -l) -eq 1 ]; then
         kexec -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
