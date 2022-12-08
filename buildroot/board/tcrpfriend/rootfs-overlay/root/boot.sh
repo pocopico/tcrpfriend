@@ -2,11 +2,11 @@
 #
 # Author :
 # Date : 221021
-# Version : 0.0.3
+# Version : 0.0.4
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.3"
+BOOTVER="0.0.4"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
@@ -23,6 +23,7 @@ function history() {
     0.0.1 Initial Release
     0.0.2 Added the option to disable TCRP Friend auto update. Default if true.
     0.0.3 Added smallfixnumber to display current update version on boot
+    0.0.4 Testing 5.x
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
