@@ -112,7 +112,7 @@ function getstaticmodule() {
         echo "Copying redpill.ko module to ramdisk"
         cp /root/redpill.ko /root/rd.temp/usr/lib/modules/rp.ko
     else
-        echo "Module does not contain platorm information for ${model}"
+        echo "Module does not contain platform information for ${model}"
     fi
 
     [ -f /root/rd.temp/usr/lib/modules/rp.ko ] && echo "Redpill module is in place"
@@ -481,6 +481,8 @@ readconfig() {
     else
         echo "ERROR ! User config file : $userconfigfile not found"
     fi
+
+    [ -z "$redpillmake" ] || [ "$redpillmake" = "null" ] && echo "redpillmake setting not found while reading $userconfigfile, defaulting to dev" && redpillmake="dev"
 
 }
 
