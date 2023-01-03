@@ -23,7 +23,7 @@ function history() {
     0.0.1 Initial Release
     0.0.2 Added the option to disable TCRP Friend auto update. Default if true.
     0.0.3 Added smallfixnumber to display current update version on boot
-    0.0.4 Testing 5.x
+    0.0.4 Testing 5.x, fixed typo and introduced user config file update and backup
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
@@ -273,18 +273,23 @@ function patchramdisk() {
 
 }
 
-function updateuserconfig() {
+function updateuserconfigfile() {
 
-    echo "Checking user config for general block"
-    generalblock="$(jq -r -e '.general' $userconfigfile)"
-    if [ "$generalblock" = "null" ] || [ -n "$generalblock" ]; then
-        echo "Result=${generalblock}, File does not contain general block, adding block"
+    backupfile="$userconfigfile.$(date +%Y%b%d)"
+    jsonfile=$(jq . $userconfigfile)
 
-        for field in model version smallfixnumber redpillmake zimghash rdhash usb_line sata_line; do
-            jsonfile=$(jq ".general+={\"$field\":\"\"}" $userconfigfile)
-            echo $jsonfile | jq . >$userconfigfile
-        done
+    if [ "$(echo $jsonfile | jq '.general .usrcfgver')" = "null" ] || [ "$(echo $jsonfile | jq -r -e '.general .usrcfgver')" != "$BOOTVER" ]; then
+        echo -n "User config file needs update, updating -> "
+        jsonfile=$([ "$(echo $jsonfile | jq '.general .usrcfgver')" = "null" ] || [ "$(echo $jsonfile | jq -r -e '.general .usrcfgver')" != "$BOOTVER" ] && echo $jsonfile | jq ".general |= . + { \"usrcfgver\":\"$BOOTVER\" }" || echo $jsonfile | jq .)
+        jsonfile=$([ "$(echo $jsonfile | jq '.general .redpillmake')" = "null" ] && echo $jsonfile | jq '.general |= . + { "redpillmake":"dev" }' || echo $jsonfile | jq .)
+        jsonfile=$([ "$(echo $jsonfile | jq '.general .friendautoupd')" = "null" ] && echo $jsonfile | jq '.general |= . + { "friendautoupd":"true" }' || echo $jsonfile | jq .)
+        jsonfile=$([ "$(echo $jsonfile | jq '.general .hidesensitive')" = "null" ] && echo $jsonfile | jq '.general |= . + { "hidesensitive":"false" }' || echo $jsonfile | jq .)
+        jsonfile=$([ "$(echo $jsonfile | jq '.ipsettings')" = "null" ] && echo $jsonfile | jq '. |= .  + {"ipsettings": { "ipset":"", "ipaddr":"", "ipgw":"", "ipdns":"", "ipproxy":"" }}' || echo $jsonfile | jq .)
+        cp $userconfigfile $backupfile
+        echo $jsonfile | jq . >$userconfigfile && echo "Done" || echo "Failed"
+
     fi
+
 }
 
 function updategrubconf() {
@@ -620,6 +625,9 @@ function initialize() {
 
     # Read Configuration variables
     readconfig
+
+    # Update user config file to latest version
+    updateuserconfigfile
 
     [ "${smallfixnumber}" = "null" ] && patchramdisk 2>&1 >>$FRIENDLOG
 
