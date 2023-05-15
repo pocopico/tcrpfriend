@@ -24,7 +24,7 @@ function history() {
     0.0.2 Added the option to disable TCRP Friend auto update. Default if true.
     0.0.3 Added smallfixnumber to display current update version on boot
     0.0.4 Testing 5.x, fixed typo and introduced user config file update and backup
-    0.0.5 Testing 7.2 removed custom.gz from partition 1
+    0.0.5 Testing 7.2 removed custom.gz from partition 1, added static boot option
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
@@ -305,6 +305,12 @@ function updategrubconf() {
 
 }
 
+function setgrubdefault() {
+
+    echo "Setting default boot entry to $1"
+    sed -i "s/set default=\"[0-9]\"/set default=\"$1\"/g" /mnt/tcrp-p1/boot/grub/grub.cfg
+}
+
 function updateuserconfigfield() {
 
     block="$1"
@@ -488,6 +494,7 @@ readconfig() {
         rdhash="$(jq -r -e '.general .rdhash' $userconfigfile)"
         zimghash="$(jq -r -e '.general .zimghash' $userconfigfile)"
         mac1="$(jq -r -e '.extra_cmdline .mac1' $userconfigfile)"
+        staticboot="$(jq -r -e '.general .staticboot' $userconfigfile)"
     else
         echo "ERROR ! User config file : $userconfigfile not found"
     fi
@@ -594,21 +601,29 @@ function boot() {
 
     countdown "booting"
 
-    echo "Boot timeout exceeded, booting ... "
-
-    echo "Loading kexec, nothing will be displayed here anymore ..."
-
-    [ "${hidesensitive}" = "true" ] && clear
-
-    if [ $(echo ${CMDLINE_LINE} | grep withefi | wc -l) -eq 1 ]; then
-        kexec -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
+    if [ "$staticboot" = "yes" ]; then
+        echo "Static boot set, rebooting to static ..."
+        rm -f /mnt/tcrp-p1/boot/grub/grubenv
+        [ "$LOADER_BUS" = "ata" ] && setgrubdefault 1
+        [ "$LOADER_BUS" = "usb" ] && setgrubdefault 0
+        reboot
     else
-        echo "Booting with noefi, please notice that this might cause issues"
-        kexec --noefi -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
+
+        echo "Boot timeout exceeded, booting ... "
+
+        echo "Loading kexec, nothing will be displayed here anymore ..."
+
+        [ "${hidesensitive}" = "true" ] && clear
+
+        if [ $(echo ${CMDLINE_LINE} | grep withefi | wc -l) -eq 1 ]; then
+            kexec -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
+        else
+            echo "Booting with noefi, please notice that this might cause issues"
+            kexec --noefi -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
+        fi
+
+        kexec -e -a
     fi
-
-    kexec -e -a
-
 }
 
 function welcome() {
