@@ -604,6 +604,10 @@ function boot() {
     if [ "$staticboot" = "yes" ]; then
         echo "Static boot set, rebooting to static ..."
         rm -f /mnt/tcrp-p1/boot/grub/grubenv
+        cp tools/libdevmapper.so.1.02 /usr/lib
+        cp tools/grub-editenv /usr/bin
+        chmod +x /usr/bin/grub-editenv
+        /usr/bin/grub-editenv /mnt/tcrp-p1/boot/grub/grubenv create
         [ "$LOADER_BUS" = "ata" ] && setgrubdefault 1
         [ "$LOADER_BUS" = "usb" ] && setgrubdefault 0
         reboot
