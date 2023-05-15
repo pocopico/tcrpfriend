@@ -1,12 +1,12 @@
 #!/bin/bash
 #
 # Author :
-# Date : 221021
-# Version : 0.0.4
+# Date : 230515
+# Version : 0.0.5
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.4"
+BOOTVER="0.0.5"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
@@ -24,6 +24,7 @@ function history() {
     0.0.2 Added the option to disable TCRP Friend auto update. Default if true.
     0.0.3 Added smallfixnumber to display current update version on boot
     0.0.4 Testing 5.x, fixed typo and introduced user config file update and backup
+    0.0.5 Testing 7.2 removed custom.gz from partition 1
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
@@ -240,7 +241,11 @@ function patchramdisk() {
 
     echo "Adding custom.gz to image"
     cd $temprd
-    cat /mnt/tcrp-p1/custom.gz | cpio -idm >/dev/null 2>&1
+    if [ -f /mnt/tcrp-p1/custom.gz ]; then
+        cat /mnt/tcrp-p1/custom.gz | cpio -idm >/dev/null 2>&1
+    else
+        cat /mnt/tcrp/custom.gz | cpio -idm >/dev/null 2>&1
+    fi
 
     for script in $(find /root/rd.temp/exts/ | grep ".sh"); do chmod +x $script; done
     chmod +x $temprd/usr/sbin/modprobe
@@ -257,7 +262,7 @@ function patchramdisk() {
     echo "Copying file to ${LOADER_DISK}3"
 
     cp -f /root/initrd-dsm /mnt/tcrp
-    cp -f /root/initrd-dsm /mnt/tcrp-p1/rd.gz
+
     cd /root && rm -rf $temprd
 
     origrdhash=$(sha256sum /mnt/tcrp-p2/rd.gz | awk '{print $1}')
