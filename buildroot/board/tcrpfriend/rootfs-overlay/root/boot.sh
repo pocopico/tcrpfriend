@@ -599,11 +599,8 @@ function boot() {
 
     [ $(grep mac /tmp/cmdline.check | wc -l) != $netif_num ] && msgalert "FAILED to match the count of configured netif_num and mac addresses, DSM will panic, exiting so you can fix this\n" && exit 99
 
-    countdown "booting"
-
-    if [ "$staticboot" = "yes" ]; then
+    if [ "$staticboot" = "true" ]; then
         echo "Static boot set, rebooting to static ..."
-        rm -f /mnt/tcrp-p1/boot/grub/grubenv
         cp tools/libdevmapper.so.1.02 /usr/lib
         cp tools/grub-editenv /usr/bin
         chmod +x /usr/bin/grub-editenv
@@ -612,6 +609,8 @@ function boot() {
         [ "$LOADER_BUS" = "usb" ] && setgrubdefault 0
         reboot
     else
+
+        countdown "booting"
 
         echo "Boot timeout exceeded, booting ... "
 
