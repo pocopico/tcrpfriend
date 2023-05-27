@@ -606,7 +606,7 @@ function boot() {
 
     #If EFI then add withefi to CMDLINE_LINE
     if [ "$EFIMODE" = "yes" ] && [ $(echo ${CMDLINE_LINE} | grep withefi | wc -l) -le 0 ]; then
-        CMDLINE_LINE+=" withefi " && msgwarning "EFI booted system with no EFI option, adding withefi to cmdline"
+        CMDLINE_LINE+=" withefi " && msgwarning "EFI booted system with no EFI option, adding withefi to cmdline\n"
     fi
 
     if [ "$staticboot" = "true" ]; then
