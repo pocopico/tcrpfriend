@@ -4,7 +4,6 @@
     "pat_url": "https://global.download.synology.com/download/DSM/release/7.1.1/42962/DSM_DS1019%2B_42962.pat",
     "sha256": "91bb367f501a3d86988211b7e35f68809a8f967e6e4e54ff31ed89bd50a66cc9"
   },
-
   "files": {
     "zlinux": {
       "name": "zImage",
@@ -18,7 +17,6 @@
       "sha256": "e8bb4708b51edbadcc7fbdbac27666be106ce2402d7d4687f4894f7219d26d38  "
     }
   },
-
   "patches": {
     "zlinux": [
       "zImage-001-1019p-42962-ramdisk-and-flag-NOP.bsp"
@@ -31,7 +29,6 @@
       "@@@COMMON@@@/ramdisk-005-disable-disabled-ports.patch"
     ]
   },
-
   "synoinfo": {
     "maxdisks": "16",
     "internalportcfg": "0xffff",
@@ -40,13 +37,12 @@
     "support_led_brightness_adjustment": "",
     "support_leds_lp3943": "",
     "buzzeroffen": "0xffff",
-  "rss_server": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
-  "rss_server_ssl": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
-  "rss_server_v2": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.json",
-  "small_info_path": "https://example.com/null",
-  "security_version_server": "https://example.com/smallupdate"
+    "rss_server": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
+    "rss_server_ssl": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
+    "rss_server_v2": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.json",
+    "small_info_path": "https://example.com/null",
+    "security_version_server": "https://example.com/smallupdate"
   },
-
   "grub": {
     "template": "@@@COMMON@@@/grub-template.conf",
     "base_cmdline": {
@@ -55,7 +51,6 @@
       "pid": "0x0001",
       "mac1": "",
       "netif_num": 1,
-
       "syno_hw_version": "DS1019+",
       "syno_hdd_powerup_seq": 1,
       "HddHotplug": 0,
@@ -68,7 +63,6 @@
       "root": "/dev/md0",
       "earlycon": "uart8250,io,0x3f8,115200n8"
     },
-
     "menu_entries": {
       "RedPill DS1019+ v7.1.1-42962 (USB, Verbose)": {
         "options": [
@@ -102,13 +96,12 @@
           "earlyprintk": null,
           "withefi": null,
           "loglevel": 15,
-"synoboot_satadom": 2,
+          "synoboot_satadom": 2,
           "log_buf_len": "32M"
         }
       }
     }
   },
-
   "extra": {
     "compress_rd": false,
     "ramdisk_copy": {
@@ -129,4 +122,3 @@
     }
   }
 }
-

@@ -4,7 +4,6 @@
     "pat_url": "https://global.download.synology.com/download/DSM/release/7.1.1/42962/DSM_ds1520p_42962.pat",
     "sha256": "f19d2ac39fae564797c148929b8fe7c9740ac3a74099bf573b68df8fe0228cb3"
   },
-
   "files": {
     "zlinux": {
       "name": "zImage",
@@ -18,7 +17,6 @@
       "sha256": "08291e1c3812de8c1416f95503b44a04edee66e233c210d9bce351bb51e081c8  "
     }
   },
-
   "patches": {
     "zlinux": [
       "zImage-001-1520p-42962-ramdisk-and-flag-NOP.bsp"
@@ -30,7 +28,6 @@
       "@@@COMMON@@@/ramdisk-004-network-hosts.patch"
     ]
   },
-
   "synoinfo": {
     "maxdisks": "16",
     "internalportcfg": "0xffff",
@@ -39,13 +36,12 @@
     "support_led_brightness_adjustment": "",
     "support_leds_lp3943": "",
     "buzzeroffen": "0xffff",
-  "rss_server": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
-  "rss_server_ssl": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
-  "rss_server_v2": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.json",
-  "small_info_path": "https://example.com/null",
-  "security_version_server": "https://example.com/smallupdate"
+    "rss_server": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
+    "rss_server_ssl": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
+    "rss_server_v2": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.json",
+    "small_info_path": "https://example.com/null",
+    "security_version_server": "https://example.com/smallupdate"
   },
-
   "grub": {
     "template": "@@@COMMON@@@/grub-template.conf",
     "base_cmdline": {
@@ -54,7 +50,6 @@
       "pid": "0x0001",
       "mac1": "",
       "netif_num": 1,
-
       "syno_hw_version": "DS1520+",
       "intel_iommu": "igfx_off",
       "HddEnableDynamicPower": 1,
@@ -66,9 +61,7 @@
       "syno_ttyS1": "serial,0x2f8",
       "root": "/dev/md0",
       "earlycon": "uart8250,io,0x3f8,115200n8"
-
     },
-
     "menu_entries": {
       "RedPill DS1520+ v7.1.1-42962 (USB, Verbose)": {
         "options": [
@@ -102,13 +95,12 @@
           "earlyprintk": null,
           "withefi": null,
           "loglevel": 15,
-"synoboot_satadom": 2,
+          "synoboot_satadom": 2,
           "log_buf_len": "32M"
         }
-      } 
+      }
     }
   },
-
   "extra": {
     "compress_rd": false,
     "ramdisk_copy": {
@@ -129,4 +121,3 @@
     }
   }
 }
-

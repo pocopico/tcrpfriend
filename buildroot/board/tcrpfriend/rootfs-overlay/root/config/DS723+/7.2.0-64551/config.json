@@ -53,7 +53,7 @@
       "syno_ttyS0": "serial,0x3f8",
       "syno_ttyS1": "serial,0x2f8",
       "root": "/dev/md0",
-      "withefi": null,      
+      "withefi": null,
       "earlycon": "uart8250,io,0x3f8,115200n8"
     },
     "menu_entries": {

@@ -4,7 +4,6 @@
     "pat_url": "https://global.download.synology.com/download/DSM/release/7.1.1/42962/DSM_RS3413xs%2B_42962.pat",
     "sha256": "de2425d55667a1c67763aeea1155bc6e336fb419148bb70f1ae1243d914d34ff"
   },
-
   "files": {
     "zlinux": {
       "name": "zImage",
@@ -18,7 +17,6 @@
       "sha256": "d68f5559fd2030e6b10799dedd5fdfb537aaa5e68d6168981c1712f05151eb8d  "
     }
   },
-
   "patches": {
     "_comment": ".bsp patches are applied to FILES using bspatch(1); .patch are applied to DIRECTORIES using patch(1)",
     "zlinux": [
@@ -37,11 +35,11 @@
     "internalportcfg": "0x78FF",
     "esataportcfg": "0x0",
     "usbportcfg": "0x8700",
-  "rss_server": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
-  "rss_server_ssl": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
-  "rss_server_v2": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.json",
-  "small_info_path": "https://example.com/null",
-  "security_version_server": "https://example.com/smallupdate"
+    "rss_server": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
+    "rss_server_ssl": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
+    "rss_server_v2": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.json",
+    "small_info_path": "https://example.com/null",
+    "security_version_server": "https://example.com/smallupdate"
   },
   "grub": {
     "template": "@@@COMMON@@@/grub-template.conf",
@@ -51,7 +49,6 @@
       "pid": "0x0001",
       "mac1": "",
       "netif_num": 1,
-
       "syno_hw_version": "RS3413xs+",
       "syno_hdd_powerup_seq": 0,
       "HddHotplug": 0,
@@ -94,7 +91,7 @@
         "cmdline": {
           "earlyprintk": null,
           "loglevel": 15,
-"synoboot_satadom": 2,
+          "synoboot_satadom": 2,
           "log_buf_len": "32M"
         }
       }
@@ -120,4 +117,3 @@
     }
   }
 }
-

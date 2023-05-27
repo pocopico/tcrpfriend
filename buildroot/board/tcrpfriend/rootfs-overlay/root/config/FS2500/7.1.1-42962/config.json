@@ -4,7 +4,6 @@
     "pat_url": "https://global.download.synology.com/download/DSM/release/7.1.1/42962/DSM_FS2500_42962.pat",
     "sha256": "1adc272ba9f308866dc69a8f550d4511966a1156c553f925be167815046a5ab4"
   },
-
   "files": {
     "zlinux": {
       "name": "zImage",
@@ -18,7 +17,6 @@
       "sha256": "2df11d9f0b383da1eb34606770e55391f974f9cbc096127fe6a821ecd644e05a"
     }
   },
-
   "patches": {
     "zlinux": [
       "zImage-001-fs2500-42962-ramdisk-and-flag-NOP.bsp"
@@ -30,15 +28,13 @@
       "@@@COMMON@@@/ramdisk-004-network-hosts.patch"
     ]
   },
-
   "synoinfo": {
-  "rss_server": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
-  "rss_server_ssl": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
-  "rss_server_v2": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.json",
-  "small_info_path": "https://example.com/null",
-  "security_version_server": "https://example.com/smallupdate"    
+    "rss_server": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
+    "rss_server_ssl": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.xml",
+    "rss_server_v2": "https://raw.githubusercontent.com/pocopico/redpill-load/develop/rss.json",
+    "small_info_path": "https://example.com/null",
+    "security_version_server": "https://example.com/smallupdate"
   },
-
   "grub": {
     "template": "@@@COMMON@@@/grub-template.conf",
     "base_cmdline": {
@@ -47,7 +43,6 @@
       "pid": "0x0001",
       "mac1": "",
       "netif_num": 1,
-
       "syno_hw_version": "FS2500",
       "SMBusHddDynamicPower": 1,
       "vender_format_version": 2,
@@ -59,7 +54,6 @@
       "root": "/dev/md0",
       "earlycon": "uart8250,io,0x3f8,115200n8"
     },
-
     "menu_entries": {
       "RedPill FS2500 v7.1.1-42962 (USB, Verbose)": {
         "options": [
@@ -93,13 +87,12 @@
           "earlyprintk": null,
           "withefi": null,
           "loglevel": 15,
-"synoboot_satadom": 2,
+          "synoboot_satadom": 2,
           "log_buf_len": "32M"
         }
       }
     }
   },
-
   "extra": {
     "compress_rd": false,
     "ramdisk_copy": {
@@ -120,4 +113,3 @@
     }
   }
 }
-
