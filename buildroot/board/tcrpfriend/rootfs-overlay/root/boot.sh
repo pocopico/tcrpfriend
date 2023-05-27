@@ -347,7 +347,7 @@ function gethw() {
     echo -ne "Loader BUS: $(msgnormal "$LOADER_BUS\n")"
     echo -ne "Running on $(cat /proc/cpuinfo | grep "model name" | awk -F: '{print $2}' | wc -l) Processor $(cat /proc/cpuinfo | grep "model name" | awk -F: '{print $2}' | uniq) With $(free -h | grep Mem | awk '{print $2}') Memory\n"
     echo -ne "System has $(lspci -nn | egrep -e "\[0100\]" -e "\[0106\]" | wc -l) HBAs and $(lspci -nn | egrep -e "\[0200\]" | wc -l) Network cards\n"
-    [ -d /sys/firmware/efi ] && mgsnormal -"And is running in UEFI mode\n" && EFIMODE="yes" || msgwarning "And is running in Legacy mode\n"
+    [ -d /sys/firmware/efi ] && msgnormal -"And is running in UEFI mode\n" && EFIMODE="yes" || msgwarning "And is running in Legacy mode\n"
 }
 
 function checkmachine() {
