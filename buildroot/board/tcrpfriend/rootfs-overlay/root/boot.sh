@@ -1,12 +1,12 @@
 #!/bin/bash
 #
 # Author :
-# Date : 230515
-# Version : 0.0.5
+# Date : 230527
+# Version : 0.0.5d
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.5"
+BOOTVER="0.0.5d"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
@@ -25,6 +25,10 @@ function history() {
     0.0.3 Added smallfixnumber to display current update version on boot
     0.0.4 Testing 5.x, fixed typo and introduced user config file update and backup
     0.0.5 Testing 7.2 removed custom.gz from partition 1, added static boot option
+    0.0.5a Config updates
+    0.0.5b Config updates
+    0.0.5c Config updates
+    0.0.5d Added the detection of EFI and the addition of withefi option to cmdline
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
@@ -343,6 +347,7 @@ function gethw() {
     echo -ne "Loader BUS: $(msgnormal "$LOADER_BUS\n")"
     echo -ne "Running on $(cat /proc/cpuinfo | grep "model name" | awk -F: '{print $2}' | wc -l) Processor $(cat /proc/cpuinfo | grep "model name" | awk -F: '{print $2}' | uniq) With $(free -h | grep Mem | awk '{print $2}') Memory\n"
     echo -ne "System has $(lspci -nn | egrep -e "\[0100\]" -e "\[0106\]" | wc -l) HBAs and $(lspci -nn | egrep -e "\[0200\]" | wc -l) Network cards\n"
+    [ -d /sys/firmware/efi ] && echo -ne "And is running in UEFI mode\n" && EFIMODE="yes" || echo -ne "And is running in Legacy mode\n"
 }
 
 function checkmachine() {
@@ -598,6 +603,11 @@ function boot() {
     . /tmp/cmdline.check
 
     [ $(grep mac /tmp/cmdline.check | wc -l) != $netif_num ] && msgalert "FAILED to match the count of configured netif_num and mac addresses, DSM will panic, exiting so you can fix this\n" && exit 99
+
+    #If EFI then add withefi to CMDLINE_LINE
+    if [ $EFIMODE = "yes" ]; then
+        CMDLINE_LINE+=" withefi "
+    fi
 
     if [ "$staticboot" = "true" ]; then
         echo "Static boot set, rebooting to static ..."
