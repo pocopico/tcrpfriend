@@ -347,7 +347,7 @@ function gethw() {
     echo -ne "Loader BUS: $(msgnormal "$LOADER_BUS\n")"
     echo -ne "Running on $(cat /proc/cpuinfo | grep "model name" | awk -F: '{print $2}' | wc -l) Processor $(cat /proc/cpuinfo | grep "model name" | awk -F: '{print $2}' | uniq) With $(free -h | grep Mem | awk '{print $2}') Memory\n"
     echo -ne "System has $(lspci -nn | egrep -e "\[0100\]" -e "\[0106\]" | wc -l) HBAs and $(lspci -nn | egrep -e "\[0200\]" | wc -l) Network cards\n"
-    [ -d /sys/firmware/efi ] && echo -ne "And is running in UEFI mode\n" && EFIMODE="yes" || echo -ne "And is running in Legacy mode\n"
+    [ -d /sys/firmware/efi ] && mgsnormal -"And is running in UEFI mode\n" && EFIMODE="yes" || msgwarning "And is running in Legacy mode\n"
 }
 
 function checkmachine() {
@@ -605,8 +605,8 @@ function boot() {
     [ $(grep mac /tmp/cmdline.check | wc -l) != $netif_num ] && msgalert "FAILED to match the count of configured netif_num and mac addresses, DSM will panic, exiting so you can fix this\n" && exit 99
 
     #If EFI then add withefi to CMDLINE_LINE
-    if [ $EFIMODE = "yes" ]; then
-        CMDLINE_LINE+=" withefi "
+    if [ "$EFIMODE" = "yes" ] && [ $(echo ${CMDLINE_LINE} | grep withefi | wc -l) -le 0 ]; then
+        CMDLINE_LINE+=" withefi " && msgwarning "EFI booted system with no EFI option, adding withefi to cmdline"
     fi
 
     if [ "$staticboot" = "true" ]; then
@@ -631,7 +631,7 @@ function boot() {
         if [ $(echo ${CMDLINE_LINE} | grep withefi | wc -l) -eq 1 ]; then
             kexec -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
         else
-            echo "Booting with noefi, please notice that this might cause issues"
+            msgwarning "Booting with noefi, please notice that this might cause issues"
             kexec --noefi -l "${MOD_ZIMAGE_FILE}" --initrd "${MOD_RDGZ_FILE}" --command-line="${CMDLINE_LINE}"
         fi
 
