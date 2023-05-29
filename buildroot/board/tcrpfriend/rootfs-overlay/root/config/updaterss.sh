@@ -19,4 +19,3 @@ for file in $(ls */*/config.json); do
     [ $(jq -re ".synoinfo.rss_server_v2" $file) != "$rss_server_v2" ] && echo -n "File : $file, " && jsonfile=$(jq ".synoinfo+={\"rss_server_v2\":\"$rss_server_v2\"}" $file) && echo $jsonfile >$file && [ $(jq -re ".synoinfo.rss_server_v2" $file) == "$rss_server_v2" ] && echo "rss_server_v2 updated "
 
 done
-
