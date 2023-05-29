@@ -2,7 +2,7 @@
 #
 # Author :
 # Date : 230527
-# Version : 0.0.5d
+# Version : 0.0.5e
 # User Variables :
 ###############################################################################
 
@@ -29,6 +29,7 @@ function history() {
     0.0.5b Config updates
     0.0.5c Config updates
     0.0.5d Added the detection of EFI and the addition of withefi option to cmdline
+    0.0.5e Updated configs
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
