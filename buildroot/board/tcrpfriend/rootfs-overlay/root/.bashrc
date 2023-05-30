@@ -16,6 +16,7 @@ alias xcs='mkdir -p /root/cs && cd /root/cs && cat /mnt/tcrp/custom.gz |cpio -id
 alias ccs='cd /root/cs && find . | cpio -o -H newc -R root:root >/mnt/tcrp/custom.gz'
 alias prm='cd /root && ./boot.sh patchramdisk'
 alias pkn='cd /root && ./boot.sh patchkernel'
+alias bfs='cd /root && ./boot.sh forcejunior'
 
 
 
