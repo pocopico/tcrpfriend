@@ -38,7 +38,7 @@ jobs:
           rm -f ../initrd-friend
           ls -ltr /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root 
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/* /opt/updaterootfs/temprd/root/
-          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/.* /opt/updaterootfs/temprd/root/
+          sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/root/.bashrc /opt/updaterootfs/temprd/root/
           sudo cp -rf /opt/config-files/redpill-load/config /opt/updaterootfs/temprd/root/
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/etc/* /opt/updaterootfs/temprd/etc/
           sudo cp -rf /home/runner/work/tcrpfriend/tcrpfriend/buildroot/board/tcrpfriend/rootfs-overlay/usr/* /opt/updaterootfs/temprd/usr/
