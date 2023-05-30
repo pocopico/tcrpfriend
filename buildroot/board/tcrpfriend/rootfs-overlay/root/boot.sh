@@ -6,7 +6,7 @@
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.5d"
+BOOTVER="0.0.5e"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
