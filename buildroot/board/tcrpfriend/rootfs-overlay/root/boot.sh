@@ -1,12 +1,12 @@
 #!/bin/bash
 #
 # Author :
-# Date : 230527
-# Version : 0.0.5e
+# Date : 230601
+# Version : 0.0.5f
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.5e"
+BOOTVER="0.0.5f"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
