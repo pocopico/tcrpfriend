@@ -2,11 +2,11 @@
 #
 # Author :
 # Date : 230601
-# Version : 0.0.5f
+# Version : 0.0.5g
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.5f"
+BOOTVER="0.0.5g"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
@@ -30,6 +30,8 @@ function history() {
     0.0.5c Config updates
     0.0.5d Added the detection of EFI and the addition of withefi option to cmdline
     0.0.5e Updated configs
+    0.0.5f Updated configs
+    0.0.5g Enhanced the detection of redpill model 
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
@@ -114,7 +116,7 @@ function getstaticmodule() {
         fi
     done
 
-    if [ -f /root/redpill.ko ] && [ -n $(strings /root/redpill.ko | grep -i $model) ]; then
+    if [ -f /root/redpill.ko ] && [ -n $(strings /root/redpill.ko | grep -i $model | head -1) ]; then
         echo "Copying redpill.ko module to ramdisk"
         cp /root/redpill.ko /root/rd.temp/usr/lib/modules/rp.ko
     else
