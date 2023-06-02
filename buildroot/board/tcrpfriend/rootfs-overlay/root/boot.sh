@@ -2,11 +2,11 @@
 #
 # Author :
 # Date : 230601
-# Version : 0.0.5g
+# Version : 0.0.5h
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.5g"
+BOOTVER="0.0.5h"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
@@ -32,6 +32,7 @@ function history() {
     0.0.5e Updated configs
     0.0.5f Updated configs
     0.0.5g Enhanced the detection of redpill model 
+    0.0.5h Enhanced the synoinfo key reading to accept multiword keys
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
@@ -219,18 +220,18 @@ function patchramdisk() {
 
     while IFS=":" read KEY VALUE; do
         echo "Key : $KEY Value: $VALUE"
-        _set_conf_kv $KEY $VALUE $temprd/etc/synoinfo.conf
-        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc/synoinfo.conf" >>"/root/rp.txt"
-        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc.defaults/synoinfo.conf" >>"/root/rp.txt"
+        _set_conf_kv "${KEY}" "${VALUE}" $temprd/etc/synoinfo.conf
+        echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc/synoinfo.conf" >>"/root/rp.txt"
+        echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc.defaults/synoinfo.conf" >>"/root/rp.txt"
     done <<<$(echo $SYNOINFO_PATCH | jq . | grep ":" | sed -e 's/"//g' | sed -e 's/,//g')
 
     echo "Applying user synoinfo settings"
 
     while IFS=":" read KEY VALUE; do
         echo "Key : $KEY Value: $VALUE"
-        _set_conf_kv $KEY $VALUE $temprd/etc/synoinfo.conf
-        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc/synoinfo.conf" >>"/root/rp.txt"
-        echo "_set_conf_kv ${KEY} ${VALUE} /tmpRoot/etc.defaults/synoinfo.conf" >>"/root/rp.txt"
+        _set_conf_kv "${KEY}" "${VALUE}" $temprd/etc/synoinfo.conf
+        echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc/synoinfo.conf" >>"/root/rp.txt"
+        echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc.defaults/synoinfo.conf" >>"/root/rp.txt"
     done <<<$(echo $SYNOINFO_USER | jq . | grep ":" | sed -e 's/"//g' | sed -e 's/,//g')
 
     sed -e "/@@@CONFIG-GENERATED@@@/ {" -e "r /root/rp.txt" -e 'd' -e '}' -i "${temprd}/sbin/init.post"
