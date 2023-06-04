@@ -220,7 +220,7 @@ function patchramdisk() {
 
     while IFS=":" read KEY VALUE; do
         echo "Key : $KEY Value: $VALUE"
-        _set_conf_kv "${KEY}" "${VALUE}" $temprd/etc/synoinfo.conf
+        _set_conf_kv ${KEY} "${VALUE}" $temprd/etc/synoinfo.conf
         echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc/synoinfo.conf" >>"/root/rp.txt"
         echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc.defaults/synoinfo.conf" >>"/root/rp.txt"
     done <<<$(echo $SYNOINFO_PATCH | jq . | grep ":" | sed -e 's/"//g' | sed -e 's/,//g')
@@ -229,7 +229,7 @@ function patchramdisk() {
 
     while IFS=":" read KEY VALUE; do
         echo "Key : $KEY Value: $VALUE"
-        _set_conf_kv "${KEY}" "${VALUE}" $temprd/etc/synoinfo.conf
+        _set_conf_kv ${KEY} "${VALUE}" $temprd/etc/synoinfo.conf
         echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc/synoinfo.conf" >>"/root/rp.txt"
         echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc.defaults/synoinfo.conf" >>"/root/rp.txt"
     done <<<$(echo $SYNOINFO_USER | jq . | grep ":" | sed -e 's/"//g' | sed -e 's/,//g')
