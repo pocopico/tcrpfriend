@@ -2,11 +2,11 @@
 #
 # Author :
 # Date : 230601
-# Version : 0.0.5h
+# Version : 0.0.5i
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.5h"
+BOOTVER="0.0.5i"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
@@ -33,6 +33,7 @@ function history() {
     0.0.5f Updated configs
     0.0.5g Enhanced the detection of redpill model 
     0.0.5h Enhanced the synoinfo key reading to accept multiword keys
+    0.0.5i Fixed an a leading space in the synoinfo key reading
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
@@ -220,7 +221,8 @@ function patchramdisk() {
 
     while IFS=":" read KEY VALUE; do
         echo "Key : $KEY Value: $VALUE"
-        _set_conf_kv ${KEY} "${VALUE}" $temprd/etc/synoinfo.conf
+        KEY="$(echo $KEY | xargs)" && VALUE="$(echo $VALUE | xargs)"
+        _set_conf_kv "${KEY}" "${VALUE}" $temprd/etc/synoinfo.conf
         echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc/synoinfo.conf" >>"/root/rp.txt"
         echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc.defaults/synoinfo.conf" >>"/root/rp.txt"
     done <<<$(echo $SYNOINFO_PATCH | jq . | grep ":" | sed -e 's/"//g' | sed -e 's/,//g')
@@ -229,7 +231,8 @@ function patchramdisk() {
 
     while IFS=":" read KEY VALUE; do
         echo "Key : $KEY Value: $VALUE"
-        _set_conf_kv ${KEY} "${VALUE}" $temprd/etc/synoinfo.conf
+        KEY="$(echo $KEY | xargs)" && VALUE="$(echo $VALUE | xargs)"
+        _set_conf_kv "${KEY}" "${VALUE}" $temprd/etc/synoinfo.conf
         echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc/synoinfo.conf" >>"/root/rp.txt"
         echo "_set_conf_kv \"${KEY}\" \"${VALUE}\" /tmpRoot/etc.defaults/synoinfo.conf" >>"/root/rp.txt"
     done <<<$(echo $SYNOINFO_USER | jq . | grep ":" | sed -e 's/"//g' | sed -e 's/,//g')
