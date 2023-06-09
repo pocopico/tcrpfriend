@@ -2,11 +2,11 @@
 #
 # Author :
 # Date : 230601
-# Version : 0.0.5i
+# Version : 0.0.5j
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.5i"
+BOOTVER="0.0.5j"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
@@ -34,6 +34,7 @@ function history() {
     0.0.5g Enhanced the detection of redpill model 
     0.0.5h Enhanced the synoinfo key reading to accept multiword keys
     0.0.5i Fixed an a leading space in the synoinfo key reading
+    0.0.5j Updated configs to 64570
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
