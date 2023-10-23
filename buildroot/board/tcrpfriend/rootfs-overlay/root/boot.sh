@@ -1,12 +1,12 @@
 #!/bin/bash
 #
 # Author :
-# Date : 230601
-# Version : 0.0.5j
+# Date : 23102023
+# Version : 0.0.6
 # User Variables :
 ###############################################################################
 
-BOOTVER="0.0.5j"
+BOOTVER="0.0.6"
 FRIENDLOG="/mnt/tcrp/friendlog.log"
 RSS_SERVER="https://raw.githubusercontent.com/pocopico/redpill-load/develop"
 AUTOUPDATES="1"
@@ -35,6 +35,7 @@ function history() {
     0.0.5h Enhanced the synoinfo key reading to accept multiword keys
     0.0.5i Fixed an a leading space in the synoinfo key reading
     0.0.5j Updated configs to 64570
+    0.0.6  Updated configs to 69057
 
     Current Version : ${BOOTVER}
     --------------------------------------------------------------------------------------
